@@ -18,6 +18,10 @@ iOS-first app for session-based professionals (tutors, coaches, therapists) to r
 - **2025-01-18**: Private storage bucket for audio files — Security; access via signed URLs only
 
 ## Mistakes & Lessons
+- **2026-01-19**: Supabase Swift SDK v2 has type naming conflicts → Rename wrapper class from `SupabaseClient` to `Database` to avoid conflict with SDK's `SupabaseClient`. Use `Auth.Session` typealias for auth sessions to avoid conflict with our `Session` model.
+- **2026-01-19**: SwiftUI `@Environment` conflicts with custom `Environment` enum → Rename config enum to `AppConfig` to avoid shadowing SwiftUI's property wrapper.
+- **2026-01-19**: Supabase Swift SDK requires Encodable types for insert/update → Cannot use `[String: Any]` dictionaries. Create dedicated `InsertXxxRequest` structs that are Codable.
+- **2026-01-19**: @MainActor isolated classes require `await` for property access from async contexts → Add `await` when accessing `Database.shared.currentUserId` from non-MainActor code.
 - **2025-01-19**: New web app created with generic design instead of porting existing lesson-bot design → Always port CSS/tailwind config from `/users/bc/lesson-bot` when rebuilding the web app
 - **2025-01-19**: iOS project setup requires xcodegen → Run `brew install xcodegen` then `cd apps/ios && xcodegen generate` to regenerate the .xcodeproj from project.yml
 - **2025-01-18**: "database error saving new user" on signup → Trigger function `handle_new_user()` needs `SECURITY DEFINER SET search_path = public` to bypass RLS when inserting into professionals table
@@ -34,11 +38,11 @@ iOS-first app for session-based professionals (tutors, coaches, therapists) to r
 - Web app dark theme design with brand colors (hot pink/gold gradients)
 - Dashboard layout with sidebar (desktop) and bottom nav (mobile)
 - Theme toggle (dark/light mode with localStorage persistence)
-- iOS Xcode project created with xcodegen (project.yml)
-- iOS Swift packages configured (supabase-swift, RevenueCat)
+- iOS Xcode project builds successfully on simulator
+- iOS Swift packages configured (supabase-swift v2, RevenueCat)
 
 **In Progress:**
-- iOS app building/testing in simulator
+- iOS app runtime testing in simulator
 - Stripe/RevenueCat integration pending
 
 **Blocked:**
@@ -63,6 +67,17 @@ iOS-first app for session-based professionals (tutors, coaches, therapists) to r
 - `device_tokens` - Push notification tokens
 
 ## Changelog
+### 2026-01-19
+- Fixed iOS Swift/Supabase SDK v2 compatibility issues (`a0b588a`)
+- Renamed wrapper class from `SupabaseClient` to `Database` to avoid SDK naming conflict
+- Renamed `Environment` enum to `AppConfig` to avoid SwiftUI `@Environment` conflict
+- Added `AuthSession` typealias for `Auth.Session` to avoid `Session` model conflict
+- Created Encodable request structs for all Supabase insert/update operations
+- Added explicit `DismissAction` type annotations to `@Environment(\.dismiss)` properties
+- Added `await` for @MainActor isolated `Database.shared` access
+- Fixed Storage API calls to use new method signatures (`upload(_:data:options:)`)
+- iOS app now builds successfully on iPhone 17 Pro Simulator
+
 ### 2025-01-19
 - Restored dark theme design from lesson-bot to web app
 - Ported CSS design system (HSL variables, brand colors hot pink #FF69B4 / gold #FFD700)
