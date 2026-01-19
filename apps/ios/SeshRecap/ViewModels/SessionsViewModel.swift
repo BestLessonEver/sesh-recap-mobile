@@ -48,17 +48,9 @@ class SessionsViewModel: ObservableObject {
             throw SessionError.notAuthenticated
         }
 
-        // Look up the professional ID from the user_id
-        let professional: Professional = try await Database.shared
-            .from(Database.Table.professionals)
-            .select("id")
-            .eq("user_id", value: userId)
-            .single()
-            .execute()
-            .value
-
+        // professionals.id = auth.users.id (same UUID)
         let insertRequest = InsertSessionRequest(
-            professionalId: professional.id.uuidString,
+            professionalId: userId.uuidString,
             attendantId: attendantId?.uuidString,
             title: title,
             sessionStatus: "recording"

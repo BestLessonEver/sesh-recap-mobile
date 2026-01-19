@@ -38,7 +38,7 @@ class AuthViewModel: ObservableObject {
             let professional: Professional = try await Database.shared
                 .from(Database.Table.professionals)
                 .select()
-                .eq("user_id", value: userId)
+                .eq("id", value: userId)
                 .single()
                 .execute()
                 .value
