@@ -19,6 +19,7 @@ iOS-first app for session-based professionals (tutors, coaches, therapists) to r
 
 ## Mistakes & Lessons
 - **2025-01-19**: New web app created with generic design instead of porting existing lesson-bot design → Always port CSS/tailwind config from `/users/bc/lesson-bot` when rebuilding the web app
+- **2025-01-19**: iOS project setup requires xcodegen → Run `brew install xcodegen` then `cd apps/ios && xcodegen generate` to regenerate the .xcodeproj from project.yml
 - **2025-01-18**: "database error saving new user" on signup → Trigger function `handle_new_user()` needs `SECURITY DEFINER SET search_path = public` to bypass RLS when inserting into professionals table
 - **2025-01-18**: Browser automation typing into Monaco editor caused SQL syntax errors → Use JavaScript `editor.setValue()` to set content directly in Supabase SQL Editor
 
@@ -28,19 +29,21 @@ iOS-first app for session-based professionals (tutors, coaches, therapists) to r
 - Database schema with 8 tables + RLS policies
 - Apple Sign-In enabled (bundle ID: `com.seshrecap.app`)
 - Storage bucket `audio-files` created
-- iOS and web app scaffolding complete
 - Edge Functions deployed (transcribe, generate-recap, send-recap, stripe-webhook, revenuecat-webhook)
 - Web app authentication working (email/password signup)
 - Web app dark theme design with brand colors (hot pink/gold gradients)
 - Dashboard layout with sidebar (desktop) and bottom nav (mobile)
 - Theme toggle (dark/light mode with localStorage persistence)
+- iOS Xcode project created with xcodegen (project.yml)
+- iOS Swift packages configured (supabase-swift, RevenueCat)
 
 **In Progress:**
+- iOS app building/testing in simulator
 - Stripe/RevenueCat integration pending
-- iOS app development
 
 **Blocked:**
 - Apple Developer account needed for Sign in with Apple (web and iOS)
+- Apple Developer account needed for TestFlight/App Store
 
 ## Supabase Credentials
 - **Project URL**: `https://lkwxiocbnfpqglxqmsbj.supabase.co`
@@ -68,6 +71,9 @@ iOS-first app for session-based professionals (tutors, coaches, therapists) to r
 - Updated landing page with gradient branding and feature cards
 - Added mobile bottom navigation with centered record button
 - Installed tailwindcss-animate, lucide-react, clsx, tailwind-merge
+- Created iOS Xcode project using xcodegen (`91326de`)
+- Added project.yml, Info.plist, entitlements, Assets.xcassets
+- Configured Swift packages: supabase-swift, RevenueCat
 
 ### 2025-01-18
 - Supabase project "Sesh Recap" created in "Best Lesson Ever!" organization
