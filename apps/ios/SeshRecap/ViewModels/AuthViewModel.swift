@@ -22,7 +22,9 @@ class AuthViewModel: ObservableObject {
                 await loadCurrentProfessional()
 
                 // Configure RevenueCat
-                SubscriptionService.shared.configure(userId: session.user.id.uuidString)
+                if let userId = authService.session?.user.id.uuidString {
+                    SubscriptionService.shared.configure(userId: userId)
+                }
             }
         } catch {
             isAuthenticated = false
@@ -30,11 +32,11 @@ class AuthViewModel: ObservableObject {
     }
 
     private func loadCurrentProfessional() async {
-        guard let userId = SupabaseClient.shared.currentUserId else { return }
+        guard let userId = Database.shared.currentUserId else { return }
 
         do {
-            let professional: Professional = try await SupabaseClient.shared
-                .from(SupabaseClient.Table.professionals)
+            let professional: Professional = try await Database.shared
+                .from(Database.Table.professionals)
                 .select()
                 .eq("id", value: userId)
                 .single()

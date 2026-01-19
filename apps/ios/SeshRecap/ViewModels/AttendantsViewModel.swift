@@ -27,11 +27,11 @@ class AttendantsViewModel: ObservableObject {
         error = nil
         defer { isLoading = false }
 
-        guard let userId = SupabaseClient.shared.currentUserId else { return }
+        guard let userId = Database.shared.currentUserId else { return }
 
         do {
-            let fetchedAttendants: [Attendant] = try await SupabaseClient.shared
-                .from(SupabaseClient.Table.attendants)
+            let fetchedAttendants: [Attendant] = try await Database.shared
+                .from(Database.Table.attendants)
                 .select()
                 .eq("professional_id", value: userId)
                 .order("name")
@@ -48,35 +48,24 @@ class AttendantsViewModel: ObservableObject {
     // MARK: - Create Attendant
 
     func createAttendant(_ request: CreateAttendantRequest) async throws -> Attendant {
-        guard let userId = SupabaseClient.shared.currentUserId else {
+        guard let userId = Database.shared.currentUserId else {
             throw AttendantError.notAuthenticated
         }
 
-        var data: [String: Any] = [
-            "professional_id": userId.uuidString,
-            "name": request.name,
-            "is_self_contact": request.isSelfContact
-        ]
+        let insertRequest = InsertAttendantRequest(
+            professionalId: userId.uuidString,
+            name: request.name,
+            email: request.email,
+            contactEmails: request.contactEmails,
+            contactName: request.contactName,
+            isSelfContact: request.isSelfContact,
+            tags: request.tags,
+            notes: request.notes
+        )
 
-        if let email = request.email {
-            data["email"] = email
-        }
-        if let contactEmails = request.contactEmails {
-            data["contact_emails"] = contactEmails
-        }
-        if let contactName = request.contactName {
-            data["contact_name"] = contactName
-        }
-        if let tags = request.tags {
-            data["tags"] = tags
-        }
-        if let notes = request.notes {
-            data["notes"] = notes
-        }
-
-        let attendant: Attendant = try await SupabaseClient.shared
-            .from(SupabaseClient.Table.attendants)
-            .insert(data)
+        let attendant: Attendant = try await Database.shared
+            .from(Database.Table.attendants)
+            .insert(insertRequest)
             .select()
             .single()
             .execute()
@@ -91,36 +80,9 @@ class AttendantsViewModel: ObservableObject {
     // MARK: - Update Attendant
 
     func updateAttendant(_ id: UUID, _ request: UpdateAttendantRequest) async throws {
-        var updateData: [String: Any] = [:]
-
-        if let name = request.name {
-            updateData["name"] = name
-        }
-        if let email = request.email {
-            updateData["email"] = email
-        }
-        if let contactEmails = request.contactEmails {
-            updateData["contact_emails"] = contactEmails
-        }
-        if let contactName = request.contactName {
-            updateData["contact_name"] = contactName
-        }
-        if let isSelfContact = request.isSelfContact {
-            updateData["is_self_contact"] = isSelfContact
-        }
-        if let tags = request.tags {
-            updateData["tags"] = tags
-        }
-        if let notes = request.notes {
-            updateData["notes"] = notes
-        }
-        if let archived = request.archived {
-            updateData["archived"] = archived
-        }
-
-        try await SupabaseClient.shared
-            .from(SupabaseClient.Table.attendants)
-            .update(updateData)
+        try await Database.shared
+            .from(Database.Table.attendants)
+            .update(request)
             .eq("id", value: id)
             .execute()
 
@@ -140,8 +102,8 @@ class AttendantsViewModel: ObservableObject {
     // MARK: - Delete Attendant
 
     func deleteAttendant(_ id: UUID) async throws {
-        try await SupabaseClient.shared
-            .from(SupabaseClient.Table.attendants)
+        try await Database.shared
+            .from(Database.Table.attendants)
             .delete()
             .eq("id", value: id)
             .execute()

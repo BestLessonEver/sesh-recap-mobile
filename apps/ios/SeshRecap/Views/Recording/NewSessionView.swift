@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct NewSessionView: View {
-    @Environment(\.dismiss) private var dismiss
+    @Environment(\.dismiss) private var dismiss: DismissAction
     @StateObject private var viewModel: RecordingViewModel
 
     @ObservedObject var attendantsViewModel: AttendantsViewModel
@@ -120,7 +120,7 @@ struct RecordingSetupView: View {
 
 struct RecordingActiveView: View {
     @ObservedObject var viewModel: RecordingViewModel
-    @Environment(\.dismiss) private var dismiss
+    @Environment(\.dismiss) private var dismiss: DismissAction
 
     var body: some View {
         VStack(spacing: 32) {
@@ -260,7 +260,7 @@ struct AudioLevelMeter: View {
 struct AttendantPickerView: View {
     let attendants: [Attendant]
     @Binding var selected: Attendant?
-    @Environment(\.dismiss) private var dismiss
+    @Environment(\.dismiss) private var dismiss: DismissAction
 
     var body: some View {
         NavigationStack {

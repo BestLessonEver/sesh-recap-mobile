@@ -67,13 +67,22 @@ struct Session: Codable, Identifiable, Equatable {
     }
 }
 
-struct CreateSessionRequest: Codable {
+struct CreateSessionRequest {
     let attendantId: UUID?
     let title: String?
+}
+
+struct InsertSessionRequest: Codable {
+    let professionalId: String
+    let attendantId: String?
+    let title: String?
+    let sessionStatus: String
 
     enum CodingKeys: String, CodingKey {
+        case professionalId = "professional_id"
         case attendantId = "attendant_id"
         case title
+        case sessionStatus = "session_status"
     }
 }
 

@@ -24,7 +24,7 @@
 		67C7CFFDE711C33BB1A686DE /* RevenueCat in Frameworks */ = {isa = PBXBuildFile; productRef = 0FBC944567294EC5CFD099C3 /* RevenueCat */; };
 		6B07C46D82A8705019CBC88C /* AttendantDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C09010E6280C3B888AEA66C6 /* AttendantDetailView.swift */; };
 		6C66A7CF67159A1264B0E1F2 /* TeamView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F7F24A2164D6FA1176F39EA /* TeamView.swift */; };
-		8D77173990E2B635B50EB702 /* supabase-swift in Frameworks */ = {isa = PBXBuildFile; productRef = BA1CAC3818E3E75002A38280 /* supabase-swift */; };
+		8D77173990E2B635B50EB702 /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = 2122A8AB4597ABB5FE670999 /* Supabase */; };
 		96DB59CE4214EB0E709C3AE9 /* AddAttendantView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13F1E12DFBA5DED3909466D2 /* AddAttendantView.swift */; };
 		A468A7D7AF397565602D30B5 /* SessionDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D2C8EEE8DC955B8E317A803 /* SessionDetailView.swift */; };
 		AA9927A842342535EE863A43 /* AttendantsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A11D6EF3ECC0077C0AD1316 /* AttendantsViewModel.swift */; };
@@ -91,7 +91,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8D77173990E2B635B50EB702 /* supabase-swift in Frameworks */,
+				8D77173990E2B635B50EB702 /* Supabase in Frameworks */,
 				67C7CFFDE711C33BB1A686DE /* RevenueCat in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -272,7 +272,7 @@
 			);
 			name = SeshRecap;
 			packageProductDependencies = (
-				BA1CAC3818E3E75002A38280 /* supabase-swift */,
+				2122A8AB4597ABB5FE670999 /* Supabase */,
 				0FBC944567294EC5CFD099C3 /* RevenueCat */,
 			);
 			productName = SeshRecap;
@@ -377,7 +377,6 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = SeshRecap/SeshRecap.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = SeshRecap/Info.plist;
@@ -461,7 +460,6 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = SeshRecap/SeshRecap.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = SeshRecap/Info.plist;
@@ -581,10 +579,10 @@
 			package = 6CB67C4DACBE47259609BFF5 /* XCRemoteSwiftPackageReference "purchases-ios" */;
 			productName = RevenueCat;
 		};
-		BA1CAC3818E3E75002A38280 /* supabase-swift */ = {
+		2122A8AB4597ABB5FE670999 /* Supabase */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = E015EAC84CC280C9F94DD6F0 /* XCRemoteSwiftPackageReference "supabase-swift" */;
-			productName = "supabase-swift";
+			productName = Supabase;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

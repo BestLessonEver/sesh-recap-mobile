@@ -42,13 +42,16 @@ targets:
         XCCONFIG_FILE: $(SRCROOT)/SeshRecap/Config/Secrets.xcconfig
     dependencies:
       - package: supabase-swift
+        product: Supabase
       - package: RevenueCat
-    entitlements:
-      path: SeshRecap/SeshRecap.entitlements
-      properties:
-        com.apple.developer.applesignin:
-          - Default
-        aps-environment: development
+        product: RevenueCat
+    # Entitlements disabled - requires paid Apple Developer account
+    # entitlements:
+    #   path: SeshRecap/SeshRecap.entitlements
+    #   properties:
+    #     com.apple.developer.applesignin:
+    #       - Default
+    #     aps-environment: development
 
 packages:
   supabase-swift:

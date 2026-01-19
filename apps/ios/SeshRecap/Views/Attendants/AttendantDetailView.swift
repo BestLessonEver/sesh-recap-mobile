@@ -3,7 +3,7 @@ import SwiftUI
 struct AttendantDetailView: View {
     let attendant: Attendant
     @ObservedObject var viewModel: AttendantsViewModel
-    @Environment(\.dismiss) private var dismiss
+    @Environment(\.dismiss) private var dismiss: DismissAction
 
     @State private var name: String
     @State private var email: String

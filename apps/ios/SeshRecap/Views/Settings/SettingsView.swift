@@ -67,7 +67,7 @@ struct SettingsView: View {
                     HStack {
                         Label("Version", systemImage: "info.circle")
                         Spacer()
-                        Text("\(Environment.appVersion) (\(Environment.buildNumber))")
+                        Text("\(AppConfig.appVersion) (\(AppConfig.buildNumber))")
                             .foregroundStyle(.secondary)
                     }
 

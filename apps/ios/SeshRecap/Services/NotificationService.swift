@@ -1,6 +1,18 @@
 import Foundation
 import UserNotifications
 
+struct InsertDeviceTokenRequest: Codable {
+    let professionalId: String
+    let deviceToken: String
+    let platform: String
+
+    enum CodingKeys: String, CodingKey {
+        case professionalId = "professional_id"
+        case deviceToken = "device_token"
+        case platform
+    }
+}
+
 class NotificationService {
     static let shared = NotificationService()
 
@@ -9,12 +21,12 @@ class NotificationService {
     // MARK: - Device Token Registration
 
     func registerDeviceToken(_ token: String) async {
-        guard let userId = SupabaseClient.shared.currentUserId else { return }
+        guard let userId = await Database.shared.currentUserId else { return }
 
         do {
             // Check if token already exists
-            let existingTokens: [DeviceToken] = try await SupabaseClient.shared
-                .from(SupabaseClient.Table.deviceTokens)
+            let existingTokens: [DeviceToken] = try await Database.shared
+                .from(Database.Table.deviceTokens)
                 .select()
                 .eq("professional_id", value: userId)
                 .eq("device_token", value: token)
@@ -22,13 +34,14 @@ class NotificationService {
                 .value
 
             if existingTokens.isEmpty {
-                try await SupabaseClient.shared
-                    .from(SupabaseClient.Table.deviceTokens)
-                    .insert([
-                        "professional_id": userId.uuidString,
-                        "device_token": token,
-                        "platform": "ios"
-                    ])
+                let request = InsertDeviceTokenRequest(
+                    professionalId: userId.uuidString,
+                    deviceToken: token,
+                    platform: "ios"
+                )
+                try await Database.shared
+                    .from(Database.Table.deviceTokens)
+                    .insert(request)
                     .execute()
             }
         } catch {
@@ -37,11 +50,11 @@ class NotificationService {
     }
 
     func unregisterDeviceToken(_ token: String) async {
-        guard let userId = SupabaseClient.shared.currentUserId else { return }
+        guard let userId = await Database.shared.currentUserId else { return }
 
         do {
-            try await SupabaseClient.shared
-                .from(SupabaseClient.Table.deviceTokens)
+            try await Database.shared
+                .from(Database.Table.deviceTokens)
                 .delete()
                 .eq("professional_id", value: userId)
                 .eq("device_token", value: token)

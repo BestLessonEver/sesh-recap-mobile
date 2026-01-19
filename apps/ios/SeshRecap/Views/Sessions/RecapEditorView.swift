@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct RecapEditorView: View {
-    @Environment(\.dismiss) private var dismiss
+    @Environment(\.dismiss) private var dismiss: DismissAction
 
     let recap: Recap
     let session: Session
@@ -81,8 +81,8 @@ struct RecapEditorView: View {
         isSaving = true
         Task {
             do {
-                try await SupabaseClient.shared
-                    .from(SupabaseClient.Table.recaps)
+                try await Database.shared
+                    .from(Database.Table.recaps)
                     .update([
                         "subject": subject,
                         "body_text": bodyText

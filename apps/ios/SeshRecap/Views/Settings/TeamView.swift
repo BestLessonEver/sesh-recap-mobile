@@ -66,12 +66,12 @@ struct TeamView: View {
         isLoading = true
         defer { isLoading = false }
 
-        guard let userId = SupabaseClient.shared.currentUserId else { return }
+        guard let userId = Database.shared.currentUserId else { return }
 
         do {
             // Get current user's organization
-            let professional: Professional = try await SupabaseClient.shared
-                .from(SupabaseClient.Table.professionals)
+            let professional: Professional = try await Database.shared
+                .from(Database.Table.professionals)
                 .select()
                 .eq("id", value: userId)
                 .single()
@@ -81,8 +81,8 @@ struct TeamView: View {
             guard let orgId = professional.organizationId else { return }
 
             // Get team members
-            let members: [Professional] = try await SupabaseClient.shared
-                .from(SupabaseClient.Table.professionals)
+            let members: [Professional] = try await Database.shared
+                .from(Database.Table.professionals)
                 .select()
                 .eq("organization_id", value: orgId)
                 .execute()
@@ -91,8 +91,8 @@ struct TeamView: View {
             teamMembers = members
 
             // Get pending invitations
-            let invites: [Invitation] = try await SupabaseClient.shared
-                .from(SupabaseClient.Table.invitations)
+            let invites: [Invitation] = try await Database.shared
+                .from(Database.Table.invitations)
                 .select()
                 .eq("organization_id", value: orgId)
                 .eq("used", value: false)
@@ -106,11 +106,11 @@ struct TeamView: View {
     }
 
     private func inviteMember(email: String, role: String) async {
-        guard let userId = SupabaseClient.shared.currentUserId else { return }
+        guard let userId = Database.shared.currentUserId else { return }
 
         do {
-            let professional: Professional = try await SupabaseClient.shared
-                .from(SupabaseClient.Table.professionals)
+            let professional: Professional = try await Database.shared
+                .from(Database.Table.professionals)
                 .select()
                 .eq("id", value: userId)
                 .single()
@@ -122,8 +122,8 @@ struct TeamView: View {
             let token = UUID().uuidString
             let expiresAt = Calendar.current.date(byAdding: .day, value: 7, to: Date())!
 
-            try await SupabaseClient.shared
-                .from(SupabaseClient.Table.invitations)
+            try await Database.shared
+                .from(Database.Table.invitations)
                 .insert([
                     "organization_id": orgId.uuidString,
                     "email": email,
@@ -142,8 +142,8 @@ struct TeamView: View {
     private func cancelInvitation(_ invitation: Invitation) {
         Task {
             do {
-                try await SupabaseClient.shared
-                    .from(SupabaseClient.Table.invitations)
+                try await Database.shared
+                    .from(Database.Table.invitations)
                     .delete()
                     .eq("id", value: invitation.id)
                     .execute()
@@ -227,7 +227,7 @@ struct InvitationRow: View {
 }
 
 struct InviteTeamMemberView: View {
-    @Environment(\.dismiss) private var dismiss
+    @Environment(\.dismiss) private var dismiss: DismissAction
 
     let onInvite: (String, String) async -> Void
 

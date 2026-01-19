@@ -6,8 +6,8 @@ struct SeshRecapApp: App {
     @StateObject private var authViewModel = AuthViewModel()
 
     init() {
-        // Initialize Supabase
-        SupabaseClient.shared.configure()
+        // Initialize Database (triggers lazy initialization)
+        _ = Database.shared
     }
 
     var body: some Scene {

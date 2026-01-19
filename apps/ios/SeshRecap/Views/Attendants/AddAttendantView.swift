@@ -1,8 +1,12 @@
 import SwiftUI
 
 struct AddAttendantView: View {
-    @Environment(\.dismiss) private var dismiss
+    @Environment(\.dismiss) private var dismiss: DismissAction
     @ObservedObject var viewModel: AttendantsViewModel
+
+    init(viewModel: AttendantsViewModel) {
+        self.viewModel = viewModel
+    }
 
     @State private var name = ""
     @State private var email = ""
@@ -116,5 +120,7 @@ struct AddAttendantView: View {
 }
 
 #Preview {
-    AddAttendantView(viewModel: AttendantsViewModel())
+    NavigationStack {
+        AddAttendantView(viewModel: AttendantsViewModel())
+    }
 }

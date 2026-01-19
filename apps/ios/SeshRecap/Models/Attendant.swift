@@ -50,7 +50,18 @@ struct Attendant: Codable, Identifiable, Equatable {
     }
 }
 
-struct CreateAttendantRequest: Codable {
+struct CreateAttendantRequest {
+    let name: String
+    let email: String?
+    let contactEmails: [String]?
+    let contactName: String?
+    let isSelfContact: Bool
+    let tags: [String]?
+    let notes: String?
+}
+
+struct InsertAttendantRequest: Codable {
+    let professionalId: String
     let name: String
     let email: String?
     let contactEmails: [String]?
@@ -60,6 +71,7 @@ struct CreateAttendantRequest: Codable {
     let notes: String?
 
     enum CodingKeys: String, CodingKey {
+        case professionalId = "professional_id"
         case name
         case email
         case contactEmails = "contact_emails"

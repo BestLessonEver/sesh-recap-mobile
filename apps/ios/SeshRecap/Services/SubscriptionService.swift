@@ -1,7 +1,7 @@
 import Foundation
 import RevenueCat
 
-class SubscriptionService: ObservableObject {
+class SubscriptionService: NSObject, ObservableObject {
     static let shared = SubscriptionService()
 
     @Published private(set) var customerInfo: CustomerInfo?
@@ -11,13 +11,15 @@ class SubscriptionService: ObservableObject {
 
     private let proEntitlementIdentifier = "pro"
 
-    private init() {}
+    private override init() {
+        super.init()
+    }
 
     // MARK: - Configuration
 
     func configure(userId: String) {
         Purchases.logLevel = .debug
-        Purchases.configure(withAPIKey: Environment.revenueCatAPIKey, appUserID: userId)
+        Purchases.configure(withAPIKey: AppConfig.revenueCatAPIKey, appUserID: userId)
 
         Purchases.shared.delegate = self
 
@@ -142,10 +144,14 @@ extension Package {
         }
 
         let monthlyPrice = price / months
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .currency
-        formatter.locale = storeProduct.priceLocale
-
-        return formatter.string(from: monthlyPrice as NSDecimalNumber) ?? localizedPriceString
+        
+        // Use priceFormatter if available, otherwise create a formatter
+        if let formatter = storeProduct.priceFormatter {
+            return formatter.string(from: monthlyPrice as NSDecimalNumber) ?? localizedPriceString
+        } else {
+            let formatter = NumberFormatter()
+            formatter.numberStyle = .currency
+            return formatter.string(from: monthlyPrice as NSDecimalNumber) ?? localizedPriceString
+        }
     }
 }

@@ -1,11 +1,16 @@
 import Foundation
 import Supabase
+import Auth
 import AuthenticationServices
 
+// Type alias to avoid conflict with our Session model
+typealias AuthSession = Auth.Session
+
+@MainActor
 class AuthService: ObservableObject {
     static let shared = AuthService()
 
-    @Published private(set) var session: Session?
+    @Published private(set) var session: AuthSession?
     @Published private(set) var user: User?
     @Published private(set) var isAuthenticated = false
 
@@ -21,12 +26,10 @@ class AuthService: ObservableObject {
 
     private func startAuthStateListener() {
         authStateListener = Task {
-            for await state in SupabaseClient.shared.auth.authStateChanges {
-                await MainActor.run {
-                    self.session = state.session
-                    self.user = state.session?.user
-                    self.isAuthenticated = state.session != nil
-                }
+            for await (event, session) in Database.shared.auth.authStateChanges {
+                self.session = session
+                self.user = session?.user
+                self.isAuthenticated = session != nil
             }
         }
     }
@@ -39,18 +42,16 @@ class AuthService: ObservableObject {
             throw AuthError.invalidCredentials
         }
 
-        let session = try await SupabaseClient.shared.auth.signInWithIdToken(
+        let session = try await Database.shared.auth.signInWithIdToken(
             credentials: .init(
                 provider: .apple,
                 idToken: tokenString
             )
         )
 
-        await MainActor.run {
-            self.session = session
-            self.user = session.user
-            self.isAuthenticated = true
-        }
+        self.session = session
+        self.user = session.user
+        self.isAuthenticated = true
 
         // Update name if provided
         if let fullName = credential.fullName {
@@ -67,42 +68,42 @@ class AuthService: ObservableObject {
     // MARK: - Email Auth
 
     func signUp(email: String, password: String, name: String) async throws {
-        let session = try await SupabaseClient.shared.auth.signUp(
+        let response = try await Database.shared.auth.signUp(
             email: email,
             password: password,
             data: ["name": .string(name)]
         )
 
-        await MainActor.run {
-            self.session = session.session
-            self.user = session.session?.user
-            self.isAuthenticated = session.session != nil
+        switch response {
+        case .session(let session):
+            self.session = session
+            self.user = session.user
+            self.isAuthenticated = true
+        case .user:
+            // Email confirmation required
+            break
         }
     }
 
     func signIn(email: String, password: String) async throws {
-        let session = try await SupabaseClient.shared.auth.signIn(
+        let session = try await Database.shared.auth.signIn(
             email: email,
             password: password
         )
 
-        await MainActor.run {
-            self.session = session
-            self.user = session.user
-            self.isAuthenticated = true
-        }
+        self.session = session
+        self.user = session.user
+        self.isAuthenticated = true
     }
 
     // MARK: - Sign Out
 
     func signOut() async throws {
-        try await SupabaseClient.shared.auth.signOut()
+        try await Database.shared.auth.signOut()
 
-        await MainActor.run {
-            self.session = nil
-            self.user = nil
-            self.isAuthenticated = false
-        }
+        self.session = nil
+        self.user = nil
+        self.isAuthenticated = false
     }
 
     // MARK: - Profile
@@ -112,8 +113,8 @@ class AuthService: ObservableObject {
             throw AuthError.notAuthenticated
         }
 
-        try await SupabaseClient.shared
-            .from(SupabaseClient.Table.professionals)
+        try await Database.shared
+            .from(Database.Table.professionals)
             .update(["name": name])
             .eq("id", value: userId)
             .execute()
@@ -122,15 +123,13 @@ class AuthService: ObservableObject {
     // MARK: - Session
 
     func refreshSession() async throws {
-        let session = try await SupabaseClient.shared.auth.refreshSession()
-        await MainActor.run {
-            self.session = session
-            self.user = session.user
-        }
+        let session = try await Database.shared.auth.refreshSession()
+        self.session = session
+        self.user = session.user
     }
 
-    func getSession() async throws -> Session? {
-        try await SupabaseClient.shared.auth.session
+    func getSession() async throws -> AuthSession? {
+        try await Database.shared.auth.session
     }
 }
 

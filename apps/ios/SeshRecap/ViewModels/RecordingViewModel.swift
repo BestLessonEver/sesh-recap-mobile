@@ -48,7 +48,7 @@ class RecordingViewModel: ObservableObject {
     func startRecording() async {
         guard !isRecording else { return }
 
-        guard checkMicrophonePermission() else {
+        if !checkMicrophonePermission() {
             let granted = await requestMicrophonePermission()
             if !granted {
                 error = RecordingError.permissionDenied

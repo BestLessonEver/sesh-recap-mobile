@@ -1,5 +1,6 @@
 import Foundation
 import Supabase
+import Storage
 
 class StorageService {
     static let shared = StorageService()
@@ -11,11 +12,11 @@ class StorageService {
     // MARK: - Upload
 
     func uploadAudio(data: Data, path: String) async throws -> String {
-        let storage = SupabaseClient.shared.storage(bucketName)
+        let storage = await Database.shared.storage(bucketName)
 
         try await storage.upload(
-            path: path,
-            file: data,
+            path,
+            data: data,
             options: FileOptions(
                 contentType: "audio/mp4",
                 upsert: true
@@ -33,7 +34,7 @@ class StorageService {
     // MARK: - Download
 
     func getDownloadURL(path: String) async throws -> URL {
-        let storage = SupabaseClient.shared.storage(bucketName)
+        let storage = await Database.shared.storage(bucketName)
 
         let signedURL = try await storage.createSignedURL(
             path: path,
@@ -44,21 +45,21 @@ class StorageService {
     }
 
     func downloadAudio(path: String) async throws -> Data {
-        let storage = SupabaseClient.shared.storage(bucketName)
+        let storage = await Database.shared.storage(bucketName)
         return try await storage.download(path: path)
     }
 
     // MARK: - Delete
 
     func deleteAudio(paths: [String]) async throws {
-        let storage = SupabaseClient.shared.storage(bucketName)
+        let storage = await Database.shared.storage(bucketName)
         try await storage.remove(paths: paths)
     }
 
     // MARK: - List
 
     func listFiles(folder: String) async throws -> [FileObject] {
-        let storage = SupabaseClient.shared.storage(bucketName)
+        let storage = await Database.shared.storage(bucketName)
         return try await storage.list(path: folder)
     }
 }

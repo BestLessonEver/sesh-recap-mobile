@@ -2,7 +2,9 @@ import SwiftUI
 
 struct SignInView: View {
     @EnvironmentObject var authViewModel: AuthViewModel
-    @Environment(\.dismiss) private var dismiss
+    @Environment(\.dismiss) private var dismiss: DismissAction
+
+    init() {}
 
     @State private var isSignUp = false
     @State private var email = ""

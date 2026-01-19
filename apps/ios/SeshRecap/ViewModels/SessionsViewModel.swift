@@ -19,11 +19,11 @@ class SessionsViewModel: ObservableObject {
         error = nil
         defer { isLoading = false }
 
-        guard let userId = SupabaseClient.shared.currentUserId else { return }
+        guard let userId = Database.shared.currentUserId else { return }
 
         do {
-            let fetchedSessions: [Session] = try await SupabaseClient.shared
-                .from(SupabaseClient.Table.sessions)
+            let fetchedSessions: [Session] = try await Database.shared
+                .from(Database.Table.sessions)
                 .select("""
                     *,
                     attendant:attendants(*),
@@ -44,18 +44,20 @@ class SessionsViewModel: ObservableObject {
     // MARK: - Create Session
 
     func createSession(attendantId: UUID?, title: String?) async throws -> Session {
-        guard let userId = SupabaseClient.shared.currentUserId else {
+        guard let userId = Database.shared.currentUserId else {
             throw SessionError.notAuthenticated
         }
 
-        let session: Session = try await SupabaseClient.shared
-            .from(SupabaseClient.Table.sessions)
-            .insert([
-                "professional_id": userId.uuidString,
-                "attendant_id": attendantId?.uuidString as Any,
-                "title": title as Any,
-                "session_status": "recording"
-            ])
+        let insertRequest = InsertSessionRequest(
+            professionalId: userId.uuidString,
+            attendantId: attendantId?.uuidString,
+            title: title,
+            sessionStatus: "recording"
+        )
+
+        let session: Session = try await Database.shared
+            .from(Database.Table.sessions)
+            .insert(insertRequest)
             .select()
             .single()
             .execute()
@@ -68,34 +70,13 @@ class SessionsViewModel: ObservableObject {
     // MARK: - Update Session
 
     func updateSession(_ sessionId: UUID, request: UpdateSessionRequest) async throws {
-        var updateData: [String: Any] = [:]
-
-        if let title = request.title {
-            updateData["title"] = title
-        }
-        if let audioUrl = request.audioUrl {
-            updateData["audio_url"] = audioUrl
-        }
-        if let audioChunks = request.audioChunks {
-            updateData["audio_chunks"] = audioChunks
-        }
-        if let durationSeconds = request.durationSeconds {
-            updateData["duration_seconds"] = durationSeconds
-        }
-        if let status = request.sessionStatus {
-            updateData["session_status"] = status.rawValue
-        }
-        if let attendantId = request.attendantId {
-            updateData["attendant_id"] = attendantId.uuidString
-        }
-
-        try await SupabaseClient.shared
-            .from(SupabaseClient.Table.sessions)
-            .update(updateData)
+        try await Database.shared
+            .from(Database.Table.sessions)
+            .update(request)
             .eq("id", value: sessionId)
             .execute()
 
-        if let index = sessions.firstIndex(where: { $0.id == sessionId }) {
+        if sessions.contains(where: { $0.id == sessionId }) {
             await loadSessions(forceRefresh: true)
         }
     }
@@ -103,8 +84,8 @@ class SessionsViewModel: ObservableObject {
     // MARK: - Delete Session
 
     func deleteSession(_ sessionId: UUID) async throws {
-        try await SupabaseClient.shared
-            .from(SupabaseClient.Table.sessions)
+        try await Database.shared
+            .from(Database.Table.sessions)
             .delete()
             .eq("id", value: sessionId)
             .execute()
@@ -124,7 +105,7 @@ class SessionsViewModel: ObservableObject {
             let transcript: String?
         }
 
-        let response: TranscribeResponse = try await SupabaseClient.shared.invoke(
+        let response: TranscribeResponse = try await Database.shared.invoke(
             "transcribe",
             body: TranscribeRequest(sessionId: sessionId.uuidString)
         )
@@ -146,7 +127,7 @@ class SessionsViewModel: ObservableObject {
             let recap: Recap?
         }
 
-        let response: GenerateResponse = try await SupabaseClient.shared.invoke(
+        let response: GenerateResponse = try await Database.shared.invoke(
             "generate-recap",
             body: GenerateRequest(sessionId: sessionId.uuidString)
         )
@@ -168,7 +149,7 @@ class SessionsViewModel: ObservableObject {
             let sentTo: [String]?
         }
 
-        let response: SendResponse = try await SupabaseClient.shared.invoke(
+        let response: SendResponse = try await Database.shared.invoke(
             "send-recap",
             body: SendRequest(sessionId: sessionId.uuidString)
         )

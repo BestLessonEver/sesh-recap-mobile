@@ -1,6 +1,6 @@
 import Foundation
 
-enum Environment {
+enum AppConfig {
     // MARK: - Supabase
     static let supabaseURL: URL = {
         guard let urlString = Bundle.main.object(forInfoDictionaryKey: "SUPABASE_URL") as? String,
