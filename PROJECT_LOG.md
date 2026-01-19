@@ -19,6 +19,8 @@ iOS-first app for session-based professionals (tutors, coaches, therapists) to r
 - **2025-01-18**: Private storage bucket for audio files — Security; access via signed URLs only
 
 ## Mistakes & Lessons
+- **2026-01-19**: RLS policy violation "new row violates row-level security policy" on session insert → The `professional_id` in sessions table must be the professional's UUID (from `professionals.id`), NOT the auth user's UUID. Look up professional by `user_id` first, then use `professional.id` for inserts.
+- **2026-01-19**: Professional lookup failing silently → Query was using `.eq("id", value: userId)` but should be `.eq("user_id", value: userId)`. The `professionals.id` is the table's primary key, `professionals.user_id` links to `auth.users`.
 - **2026-01-19**: New Swift files not appearing in Xcode → Project uses xcodegen; must run `xcodegen generate` after adding new files to regenerate project.pbxproj
 - **2026-01-19**: xcconfig files with URLs fail silently - `//` in URLs is treated as comment → Hardcode credentials directly in `AppConfig.swift` for development. For production, use a different approach (e.g., plist without xcconfig, or CI injection).
 - **2026-01-19**: xcodegen `configFiles:` doesn't reliably pass values to Info.plist → Even with proper xcconfig setup, `Bundle.main.object(forInfoDictionaryKey:)` returns nil. Hardcode values in Swift code as workaround.
@@ -46,6 +48,8 @@ iOS-first app for session-based professionals (tutors, coaches, therapists) to r
 - iOS Swift packages configured (supabase-swift v2, RevenueCat)
 - **iOS app branded design matching web app** (Theme.swift design system)
 - iOS views styled: WelcomeView, SignInView, DashboardView, MainTabView, SessionListView, AttendantListView, SettingsView
+- **iOS recording flow working** - record button starts immediately, sessions created with correct professional_id
+- **iOS light/dark mode toggle** - AppearanceManager with Light/Dark/System options in Settings
 
 **In Progress:**
 - Stripe/RevenueCat integration pending
@@ -73,6 +77,16 @@ iOS-first app for session-based professionals (tutors, coaches, therapists) to r
 
 ## Changelog
 ### 2026-01-19
+- Fixed RLS policy violation on session creation (`fa551b3`)
+  - `loadCurrentProfessional()` now queries by `user_id` instead of `id`
+  - `createSession()` looks up professional ID from `user_id` before inserting
+- Added light/dark mode toggle in Settings (`c967506`)
+  - Created `AppearanceManager` with Light/Dark/System options
+  - Updated `Theme.swift` with adaptive colors using `UIColor` dynamic provider
+  - Brand colors (pink/gold) consistent across modes, backgrounds adapt
+- Fixed record button to start immediately on press (`c967506`)
+  - Removed setup screen, auto-starts recording when NewSessionView appears
+- Updated SessionDetailView to dark mode theme (`c967506`)
 - Updated iOS app with branded design matching web app (`a01bedf`)
 - Created `Config/Theme.swift` with brand colors (pink #FF69B4, gold #FFD700), gradients, and reusable components
 - Added components: BrandCard, GradientAvatar, StatusPill, HeroSection, BrandText, GradientBlob
