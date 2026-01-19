@@ -19,6 +19,8 @@ iOS-first app for session-based professionals (tutors, coaches, therapists) to r
 - **2025-01-18**: Private storage bucket for audio files — Security; access via signed URLs only
 
 ## Mistakes & Lessons
+- **2026-01-19**: Recording first press didn't capture audio (100ms delay insufficient) → Pre-warm audio session at start of `startRecording()` in ViewModel by calling `prepareAudioSession()` in a parallel Task. This lets audio hardware initialize while permission check and DB operations run.
+- **2026-01-19**: Edge function lint failure blocked deployment (unused `deviceTokens` variable) → Always remove unused variables. The signed URL fix was correct but never deployed because lint failed.
 - **2026-01-19**: Edge function 401 Unauthorized after stopping recording → Supabase Swift SDK v2 doesn't always pass auth headers to function invocations (known SDK bug, see [GitHub issue #634](https://github.com/supabase/supabase-swift/issues/634)). Fix: Explicitly call `client.functions.setAuth(token: accessToken)` before invoking functions in `SupabaseClient.swift`.
 - **2026-01-19**: RLS error "new row violates row-level security policy for table 'objects'" on record button → The error was on **storage.objects** (Supabase Storage), NOT the sessions table. The audio-files bucket had **no RLS policies** configured. Fix: Add SELECT and INSERT policies for authenticated users in Supabase Dashboard → Storage → Policies.
 - **2026-01-19**: (Minor) DB trigger `handle_new_user()` may fail silently → Added defensive `ensureProfessionalExists()` check in SessionsViewModel as safety measure (not the root cause of the RLS error).
@@ -80,6 +82,10 @@ iOS-first app for session-based professionals (tutors, coaches, therapists) to r
 
 ## Changelog
 ### 2026-01-19
+- Fixed transcribe edge function 500 error and recording first press issue (`581086b`)
+  - Removed unused `deviceTokens` query that was blocking lint/deployment
+  - Added `prepareAudioSession()` method to RecordingService for pre-warming
+  - ViewModel now pre-warms audio session in parallel with permission/DB ops
 - Fixed edge function 401 Unauthorized error - Added explicit `setAuth(token:)` call before `functions.invoke()` in `SupabaseClient.swift` (workaround for SDK auth header bug)
 - **ACTUAL FIX**: Storage RLS error on record button - Added SELECT/INSERT policies to `audio-files` bucket in Supabase (via Dashboard)
 - Added defensive `ensureProfessionalExists()` in SessionsViewModel (`4923f5b`) - not the root cause but good safety measure
