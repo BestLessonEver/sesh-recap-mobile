@@ -26,6 +26,12 @@ struct Professional: Codable, Identifiable, Equatable {
     }
 }
 
+struct InsertProfessionalRequest: Codable {
+    let id: String
+    let name: String
+    let email: String
+}
+
 struct Organization: Codable, Identifiable, Equatable {
     let id: UUID
     var name: String

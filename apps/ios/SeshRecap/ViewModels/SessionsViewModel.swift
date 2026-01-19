@@ -48,6 +48,9 @@ class SessionsViewModel: ObservableObject {
             throw SessionError.notAuthenticated
         }
 
+        // Ensure professional row exists (handles case where DB trigger failed)
+        try await ensureProfessionalExists(userId: userId)
+
         // professionals.id = auth.users.id (same UUID)
         let insertRequest = InsertSessionRequest(
             professionalId: userId.uuidString,
@@ -66,6 +69,30 @@ class SessionsViewModel: ObservableObject {
 
         sessions.insert(session, at: 0)
         return session
+    }
+
+    // MARK: - Ensure Professional Exists
+
+    private func ensureProfessionalExists(userId: UUID) async throws {
+        let professionals: [Professional] = try await Database.shared
+            .from(Database.Table.professionals)
+            .select()
+            .eq("id", value: userId)
+            .execute()
+            .value
+
+        if professionals.isEmpty {
+            let user = Database.shared.currentUser
+            let request = InsertProfessionalRequest(
+                id: userId.uuidString,
+                name: user?.userMetadata["name"] as? String ?? user?.email ?? "User",
+                email: user?.email ?? ""
+            )
+            try await Database.shared
+                .from(Database.Table.professionals)
+                .insert(request)
+                .execute()
+        }
     }
 
     // MARK: - Update Session
