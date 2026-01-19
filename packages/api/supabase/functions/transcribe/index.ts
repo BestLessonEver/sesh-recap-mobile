@@ -127,11 +127,6 @@ serve(async (req) => {
       })
       .eq('id', sessionId)
 
-    const { data: deviceTokens } = await supabaseAdmin
-      .from('device_tokens')
-      .select('device_token, platform')
-      .eq('professional_id', user.id)
-
     return json({
       success: true,
       sessionId,

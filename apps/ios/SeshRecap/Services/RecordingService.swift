@@ -24,6 +24,7 @@ class RecordingService: NSObject, ObservableObject {
     private var currentSessionId: UUID?
     private var currentChunkNumber = 0
     private var uploadedChunks: [String] = []
+    private var isAudioSessionPrepared = false
 
     private let chunkDuration: TimeInterval = 30 // seconds
     private let recordingDirectory: URL
@@ -46,6 +47,18 @@ class RecordingService: NSObject, ObservableObject {
         )
     }
 
+    // MARK: - Audio Session Preparation
+
+    func prepareAudioSession() async {
+        guard !isAudioSessionPrepared else { return }
+        do {
+            try await configureAudioSession()
+            isAudioSessionPrepared = true
+        } catch {
+            print("Failed to prepare audio session: \(error)")
+        }
+    }
+
     // MARK: - Recording Control
 
     func startRecording(sessionId: UUID) async throws {
@@ -55,8 +68,9 @@ class RecordingService: NSObject, ObservableObject {
         currentChunkNumber = 0
         uploadedChunks = []
 
-        try await configureAudioSession()
-        try await Task.sleep(nanoseconds: 100_000_000)  // 100ms delay for session to stabilize
+        if !isAudioSessionPrepared {
+            try await configureAudioSession()
+        }
         try await MainActor.run {
             try startNewChunk()
         }
