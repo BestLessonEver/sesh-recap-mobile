@@ -47,7 +47,20 @@ serve(async (req) => {
       .update({ session_status: 'transcribing' })
       .eq('id', sessionId)
 
-    const audioUrl = session.audio_url || session.audio_chunks[0]
+    const audioPath = session.audio_url || session.audio_chunks[0]
+
+    // Create signed URL for AssemblyAI to access the audio
+    const { data: signedUrlData, error: signedUrlError } = await supabaseAdmin
+      .storage
+      .from('audio-files')
+      .createSignedUrl(audioPath, 3600) // 1 hour expiry
+
+    if (signedUrlError || !signedUrlData?.signedUrl) {
+      console.error('Failed to create signed URL:', signedUrlError)
+      return error('Failed to create audio URL')
+    }
+
+    const audioUrl = signedUrlData.signedUrl
 
     const transcriptResponse = await fetch('https://api.assemblyai.com/v2/transcript', {
       method: 'POST',

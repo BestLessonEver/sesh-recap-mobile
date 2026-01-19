@@ -56,7 +56,10 @@ class RecordingService: NSObject, ObservableObject {
         uploadedChunks = []
 
         try await configureAudioSession()
-        try startNewChunk()
+        try await Task.sleep(nanoseconds: 100_000_000)  // 100ms delay for session to stabilize
+        try await MainActor.run {
+            try startNewChunk()
+        }
 
         await MainActor.run {
             self.isRecording = true
