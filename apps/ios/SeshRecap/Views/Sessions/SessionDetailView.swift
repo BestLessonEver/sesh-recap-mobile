@@ -10,27 +10,34 @@ struct SessionDetailView: View {
     @State private var error: Error?
 
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 24) {
-                // Session Info Card
-                sessionInfoCard
+        ZStack {
+            Color.bgPrimary
+                .ignoresSafeArea()
 
-                // Transcript Section
-                if let transcript = session.transcriptText {
-                    transcriptSection(transcript)
-                } else if session.sessionStatus == .transcribing {
-                    transcribingSection
-                }
+            ScrollView {
+                VStack(alignment: .leading, spacing: 24) {
+                    // Session Info Card
+                    sessionInfoCard
 
-                // Recap Section
-                if session.canGenerateRecap {
-                    recapSection
+                    // Transcript Section
+                    if let transcript = session.transcriptText {
+                        transcriptSection(transcript)
+                    } else if session.sessionStatus == .transcribing {
+                        transcribingSection
+                    }
+
+                    // Recap Section
+                    if session.canGenerateRecap {
+                        recapSection
+                    }
                 }
+                .padding()
             }
-            .padding()
         }
         .navigationTitle(session.displayTitle)
         .navigationBarTitleDisplayMode(.inline)
+        .toolbarBackground(Color.bgPrimary, for: .navigationBar)
+        .toolbarColorScheme(.dark, for: .navigationBar)
         .sheet(isPresented: $showEditRecap) {
             if let recap = session.recap {
                 RecapEditorView(recap: recap, session: session, viewModel: viewModel)
@@ -44,61 +51,69 @@ struct SessionDetailView: View {
     }
 
     private var sessionInfoCard: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            HStack {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Duration")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                    Text(session.formattedDuration)
-                        .font(.title3)
-                        .fontWeight(.semibold)
-                }
-
-                Spacer()
-
-                VStack(alignment: .trailing, spacing: 4) {
-                    Text("Status")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                    HStack(spacing: 4) {
-                        statusIndicator
-                        Text(session.sessionStatus.rawValue.capitalized)
-                            .font(.subheadline)
-                    }
-                }
-            }
-
-            if let attendant = session.attendant {
-                Divider()
+        BrandCard {
+            VStack(alignment: .leading, spacing: 16) {
                 HStack {
-                    Image(systemName: "person.fill")
-                        .foregroundStyle(.secondary)
-                    Text(attendant.name)
-                    Spacer()
-                    if let email = attendant.displayEmail {
-                        Text(email)
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Duration")
                             .font(.caption)
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(Color.textSecondary)
+                        Text(session.formattedDuration)
+                            .font(.title3)
+                            .fontWeight(.semibold)
+                            .foregroundStyle(Color.textPrimary)
+                    }
+
+                    Spacer()
+
+                    VStack(alignment: .trailing, spacing: 4) {
+                        Text("Status")
+                            .font(.caption)
+                            .foregroundStyle(Color.textSecondary)
+                        HStack(spacing: 4) {
+                            statusIndicator
+                            Text(session.sessionStatus.rawValue.capitalized)
+                                .font(.subheadline)
+                                .foregroundStyle(Color.textPrimary)
+                        }
                     }
                 }
-            }
 
-            Divider()
+                if let attendant = session.attendant {
+                    Rectangle()
+                        .fill(Color.border)
+                        .frame(height: 1)
 
-            HStack {
-                Image(systemName: "calendar")
-                    .foregroundStyle(.secondary)
-                Text(session.createdAt, style: .date)
-                Text("at")
-                    .foregroundStyle(.secondary)
-                Text(session.createdAt, style: .time)
+                    HStack {
+                        GradientAvatar(name: attendant.name, size: 32)
+                        Text(attendant.name)
+                            .foregroundStyle(Color.textPrimary)
+                        Spacer()
+                        if let email = attendant.displayEmail {
+                            Text(email)
+                                .font(.caption)
+                                .foregroundStyle(Color.textSecondary)
+                        }
+                    }
+                }
+
+                Rectangle()
+                    .fill(Color.border)
+                    .frame(height: 1)
+
+                HStack {
+                    Image(systemName: "calendar")
+                        .foregroundStyle(Color.textSecondary)
+                    Text(session.createdAt, style: .date)
+                        .foregroundStyle(Color.textPrimary)
+                    Text("at")
+                        .foregroundStyle(Color.textSecondary)
+                    Text(session.createdAt, style: .time)
+                        .foregroundStyle(Color.textPrimary)
+                }
+                .font(.subheadline)
             }
-            .font(.subheadline)
         }
-        .padding()
-        .background(Color(.systemGray6))
-        .clipShape(RoundedRectangle(cornerRadius: 12))
     }
 
     @ViewBuilder
@@ -110,10 +125,10 @@ struct SessionDetailView: View {
 
     private var statusColor: Color {
         switch session.sessionStatus {
-        case .ready: return .green
-        case .transcribing: return .orange
-        case .error: return .red
-        default: return .gray
+        case .ready: return .success
+        case .transcribing: return .warning
+        case .error: return .error
+        default: return .textTertiary
         }
     }
 
@@ -121,24 +136,28 @@ struct SessionDetailView: View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Transcript")
                 .font(.headline)
+                .foregroundStyle(Color.textPrimary)
 
-            Text(transcript)
-                .font(.body)
-                .padding()
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .background(Color(.systemGray6))
-                .clipShape(RoundedRectangle(cornerRadius: 12))
+            BrandCard {
+                Text(transcript)
+                    .font(.body)
+                    .foregroundStyle(Color.textPrimary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
         }
     }
 
     private var transcribingSection: some View {
-        VStack(spacing: 16) {
-            ProgressView()
-            Text("Transcribing audio...")
-                .foregroundStyle(.secondary)
+        BrandCard {
+            VStack(spacing: 16) {
+                ProgressView()
+                    .tint(Color.brandPink)
+                Text("Transcribing audio...")
+                    .foregroundStyle(Color.textSecondary)
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 24)
         }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 40)
     }
 
     @ViewBuilder
@@ -147,6 +166,7 @@ struct SessionDetailView: View {
             HStack {
                 Text("Recap")
                     .font(.headline)
+                    .foregroundStyle(Color.textPrimary)
                 Spacer()
                 if let recap = session.recap {
                     Menu {
@@ -165,6 +185,7 @@ struct SessionDetailView: View {
                         }
                     } label: {
                         Image(systemName: "ellipsis.circle")
+                            .foregroundStyle(Color.brandPink)
                     }
                 }
             }
@@ -178,63 +199,58 @@ struct SessionDetailView: View {
     }
 
     private func recapCard(_ recap: Recap) -> some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                Text(recap.subject)
-                    .font(.subheadline)
-                    .fontWeight(.medium)
-                Spacer()
-                recapStatusBadge(recap)
-            }
-
-            Text(recap.bodyText)
-                .font(.body)
-                .lineLimit(5)
-
-            if recap.canSend {
-                Button {
-                    sendRecap()
-                } label: {
-                    Label("Send Recap", systemImage: "paperplane.fill")
-                        .frame(maxWidth: .infinity)
+        BrandCard {
+            VStack(alignment: .leading, spacing: 12) {
+                HStack {
+                    Text(recap.subject)
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                        .foregroundStyle(Color.textPrimary)
+                    Spacer()
+                    recapStatusBadge(recap)
                 }
-                .buttonStyle(.borderedProminent)
-                .disabled(isSendingRecap)
+
+                Text(recap.bodyText)
+                    .font(.body)
+                    .foregroundStyle(Color.textSecondary)
+                    .lineLimit(5)
+
+                if recap.canSend {
+                    Button {
+                        sendRecap()
+                    } label: {
+                        HStack {
+                            if isSendingRecap {
+                                ProgressView()
+                                    .tint(.white)
+                            } else {
+                                Image(systemName: "paperplane.fill")
+                            }
+                            Text(isSendingRecap ? "Sending..." : "Send Recap")
+                        }
+                        .fontWeight(.semibold)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 12)
+                        .background(LinearGradient.brandGradient)
+                        .foregroundStyle(.white)
+                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                    }
+                    .disabled(isSendingRecap)
+                }
             }
         }
-        .padding()
-        .background(Color(.systemGray6))
-        .clipShape(RoundedRectangle(cornerRadius: 12))
     }
 
     @ViewBuilder
     private func recapStatusBadge(_ recap: Recap) -> some View {
-        switch recap.status {
-        case .sent:
-            Text("Sent")
-                .font(.caption)
-                .padding(.horizontal, 8)
-                .padding(.vertical, 4)
-                .background(.green.opacity(0.2))
-                .foregroundStyle(.green)
-                .clipShape(Capsule())
-        case .draft:
-            Text("Draft")
-                .font(.caption)
-                .padding(.horizontal, 8)
-                .padding(.vertical, 4)
-                .background(.orange.opacity(0.2))
-                .foregroundStyle(.orange)
-                .clipShape(Capsule())
-        case .failed:
-            Text("Failed")
-                .font(.caption)
-                .padding(.horizontal, 8)
-                .padding(.vertical, 4)
-                .background(.red.opacity(0.2))
-                .foregroundStyle(.red)
-                .clipShape(Capsule())
-        }
+        let status: StatusPill.Status = {
+            switch recap.status {
+            case .sent: return .sent
+            case .draft: return .draft
+            case .failed: return .error
+            }
+        }()
+        StatusPill(status: status)
     }
 
     private var generateRecapButton: some View {
@@ -250,9 +266,13 @@ struct SessionDetailView: View {
                 }
                 Text(isGeneratingRecap ? "Generating..." : "Generate AI Recap")
             }
+            .fontWeight(.semibold)
             .frame(maxWidth: .infinity)
+            .padding(.vertical, 14)
+            .background(LinearGradient.brandGradient)
+            .foregroundStyle(.white)
+            .clipShape(RoundedRectangle(cornerRadius: 10))
         }
-        .buttonStyle(.borderedProminent)
         .disabled(isGeneratingRecap)
     }
 

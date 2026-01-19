@@ -3,6 +3,7 @@ import SwiftUI
 struct SettingsView: View {
     @EnvironmentObject var authViewModel: AuthViewModel
     @StateObject private var subscriptionService = SubscriptionService.shared
+    @StateObject private var appearanceManager = AppearanceManager.shared
 
     @State private var showSignOutConfirmation = false
 
@@ -114,6 +115,52 @@ struct SettingsView: View {
                                     }
                                 }
                                 .buttonStyle(.plain)
+                            }
+                        }
+
+                        // Appearance Section
+                        VStack(alignment: .leading, spacing: 12) {
+                            Text("APPEARANCE")
+                                .font(.caption)
+                                .fontWeight(.semibold)
+                                .foregroundStyle(Color.textTertiary)
+                                .padding(.horizontal, 4)
+
+                            BrandCard(padding: 0) {
+                                VStack(spacing: 0) {
+                                    ForEach(AppearanceManager.Appearance.allCases, id: \.self) { appearance in
+                                        Button {
+                                            appearanceManager.appearance = appearance
+                                        } label: {
+                                            HStack {
+                                                ZStack {
+                                                    RoundedRectangle(cornerRadius: 8)
+                                                        .fill(appearanceManager.appearance == appearance ? Color.brandPink.opacity(0.15) : Color.textTertiary.opacity(0.1))
+                                                        .frame(width: 32, height: 32)
+                                                    Image(systemName: appearance.icon)
+                                                        .font(.system(size: 14))
+                                                        .foregroundStyle(appearanceManager.appearance == appearance ? Color.brandPink : Color.textSecondary)
+                                                }
+
+                                                Text(appearance.rawValue)
+                                                    .foregroundStyle(Color.textPrimary)
+
+                                                Spacer()
+
+                                                if appearanceManager.appearance == appearance {
+                                                    Image(systemName: "checkmark")
+                                                        .foregroundStyle(Color.brandPink)
+                                                }
+                                            }
+                                            .padding(16)
+                                        }
+
+                                        if appearance != AppearanceManager.Appearance.allCases.last {
+                                            Divider()
+                                                .background(Color.border)
+                                        }
+                                    }
+                                }
                             }
                         }
 

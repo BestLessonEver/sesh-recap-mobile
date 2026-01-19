@@ -34,6 +34,7 @@
 		D1AAA1D8CB64CBA7FF748CD0 /* Attendant.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2193C81BC59AAE87615DCBF /* Attendant.swift */; };
 		D2946CF1C42A8C060A8B1456 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86760AE7F17DC2661DBDB51B /* NotificationService.swift */; };
 		D5BE2795835FFA7DFED8E0B1 /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54881C23958C23DED55ED720 /* DashboardView.swift */; };
+		D8FE3D4556F076484835627E /* AppearanceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45A389A6FBED78E91D259400 /* AppearanceManager.swift */; };
 		DB5808ED99CB4478C322F7D2 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B72F327E139C75361994B563 /* ProfileView.swift */; };
 		E0A385996CB2DF533963D653 /* SubscriptionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2565458E303C8F138B5EEA8 /* SubscriptionView.swift */; };
 		E943E88982E1D70658AB4B6E /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1CF4D83EFC9D47434DF3F1B /* AppDelegate.swift */; };
@@ -56,6 +57,7 @@
 		3A046754D1990BF4B2CF1FEB /* Secrets.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Secrets.xcconfig; sourceTree = "<group>"; };
 		3A6AD28AE96B04AB29D24269 /* SessionsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionsViewModel.swift; sourceTree = "<group>"; };
 		3C52A9AD38C40B61F532FB12 /* SeshRecap.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = SeshRecap.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		45A389A6FBED78E91D259400 /* AppearanceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppearanceManager.swift; sourceTree = "<group>"; };
 		4ADF3220F4AD47555175066B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		54881C23958C23DED55ED720 /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
 		597EF5055F47618786B06E13 /* WelcomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeView.swift; sourceTree = "<group>"; };
@@ -114,6 +116,7 @@
 		2393FF60B317643855A35DAC /* Config */ = {
 			isa = PBXGroup;
 			children = (
+				45A389A6FBED78E91D259400 /* AppearanceManager.swift */,
 				8CC484EBBB73AF5512F118AE /* Environment.swift */,
 				3A046754D1990BF4B2CF1FEB /* Secrets.xcconfig */,
 				9E6E527A1277B0091714B7EF /* Theme.swift */,
@@ -338,6 +341,7 @@
 			files = (
 				96DB59CE4214EB0E709C3AE9 /* AddAttendantView.swift in Sources */,
 				E943E88982E1D70658AB4B6E /* AppDelegate.swift in Sources */,
+				D8FE3D4556F076484835627E /* AppearanceManager.swift in Sources */,
 				D1AAA1D8CB64CBA7FF748CD0 /* Attendant.swift in Sources */,
 				6B07C46D82A8705019CBC88C /* AttendantDetailView.swift in Sources */,
 				1AFD88C7047BBEABE48B9454 /* AttendantListView.swift in Sources */,

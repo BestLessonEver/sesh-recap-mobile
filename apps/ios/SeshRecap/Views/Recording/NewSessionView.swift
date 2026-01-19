@@ -5,6 +5,7 @@ struct NewSessionView: View {
     @StateObject private var viewModel: RecordingViewModel
 
     @ObservedObject var attendantsViewModel: AttendantsViewModel
+    @State private var hasStartedRecording = false
 
     init(sessionsViewModel: SessionsViewModel, attendantsViewModel: AttendantsViewModel) {
         _viewModel = StateObject(wrappedValue: RecordingViewModel(sessionsViewModel: sessionsViewModel))
@@ -13,33 +14,40 @@ struct NewSessionView: View {
 
     var body: some View {
         NavigationStack {
-            VStack(spacing: 32) {
-                if viewModel.isRecording {
-                    RecordingActiveView(viewModel: viewModel)
-                } else {
-                    RecordingSetupView(viewModel: viewModel, attendantsViewModel: attendantsViewModel)
-                }
-            }
-            .navigationTitle(viewModel.isRecording ? "Recording" : "New Session")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                if !viewModel.isRecording {
-                    ToolbarItem(placement: .cancellationAction) {
-                        Button("Cancel") {
-                            dismiss()
+            ZStack {
+                Color.bgPrimary
+                    .ignoresSafeArea()
+
+                VStack(spacing: 32) {
+                    if viewModel.isRecording || hasStartedRecording {
+                        RecordingActiveView(viewModel: viewModel)
+                    } else {
+                        // Show loading while auto-starting
+                        VStack(spacing: 16) {
+                            ProgressView()
+                                .tint(Color.brandPink)
+                            Text("Starting recording...")
+                                .foregroundStyle(Color.textSecondary)
                         }
                     }
                 }
             }
-            .interactiveDismissDisabled(viewModel.isRecording)
-            .onChange(of: viewModel.isRecording) { _, isRecording in
-                if !isRecording && viewModel.isProcessing == false {
-                    // Recording stopped successfully, dismiss
+            .navigationTitle("Recording")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbarBackground(Color.bgPrimary, for: .navigationBar)
+            .toolbarColorScheme(.dark, for: .navigationBar)
+            .interactiveDismissDisabled(viewModel.isRecording || viewModel.isProcessing)
+            .task {
+                // Auto-start recording immediately when view appears
+                if !hasStartedRecording {
+                    hasStartedRecording = true
+                    await viewModel.startRecording()
                 }
             }
             .alert("Error", isPresented: .constant(viewModel.error != nil)) {
                 Button("OK") {
                     viewModel.error = nil
+                    dismiss()
                 }
             } message: {
                 Text(viewModel.error?.localizedDescription ?? "An error occurred")
@@ -133,14 +141,15 @@ struct RecordingActiveView: View {
             // Duration
             Text(viewModel.formattedDuration)
                 .font(.system(size: 60, weight: .light, design: .monospaced))
+                .foregroundStyle(Color.textPrimary)
 
             // Status
             HStack(spacing: 8) {
                 Circle()
-                    .fill(viewModel.isPaused ? .orange : .red)
+                    .fill(viewModel.isPaused ? Color.warning : Color.error)
                     .frame(width: 12, height: 12)
                 Text(viewModel.isPaused ? "Paused" : "Recording")
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Color.textSecondary)
             }
 
             Spacer()
@@ -157,10 +166,10 @@ struct RecordingActiveView: View {
                     VStack {
                         Image(systemName: "xmark.circle.fill")
                             .font(.system(size: 44))
-                            .foregroundStyle(.gray)
+                            .foregroundStyle(Color.textTertiary)
                         Text("Cancel")
                             .font(.caption)
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(Color.textSecondary)
                     }
                 }
 
@@ -175,10 +184,10 @@ struct RecordingActiveView: View {
                     VStack {
                         Image(systemName: viewModel.isPaused ? "play.circle.fill" : "pause.circle.fill")
                             .font(.system(size: 44))
-                            .foregroundStyle(.orange)
+                            .foregroundStyle(Color.warning)
                         Text(viewModel.isPaused ? "Resume" : "Pause")
                             .font(.caption)
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(Color.textSecondary)
                     }
                 }
 
@@ -192,10 +201,10 @@ struct RecordingActiveView: View {
                     VStack {
                         Image(systemName: "stop.circle.fill")
                             .font(.system(size: 44))
-                            .foregroundStyle(.red)
+                            .foregroundStyle(Color.error)
                         Text("Stop")
                             .font(.caption)
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(Color.textSecondary)
                     }
                 }
                 .disabled(viewModel.isProcessing)
@@ -206,7 +215,7 @@ struct RecordingActiveView: View {
         .padding()
         .overlay {
             if viewModel.isProcessing {
-                Color.black.opacity(0.5)
+                Color.black.opacity(0.7)
                     .ignoresSafeArea()
                 VStack(spacing: 16) {
                     ProgressView()
@@ -246,14 +255,14 @@ struct AudioLevelMeter: View {
         let threshold = Float(index) / 30.0
         if level > threshold {
             if index > 24 {
-                return .red
+                return .error
             } else if index > 18 {
-                return .orange
+                return .brandGold
             } else {
-                return .green
+                return .brandPink
             }
         }
-        return .gray.opacity(0.3)
+        return Color.textTertiary.opacity(0.3)
     }
 }
 

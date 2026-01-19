@@ -1,28 +1,16 @@
 import SwiftUI
+import UIKit
 
-// MARK: - Brand Colors
+// MARK: - Brand Colors (same in both modes)
 extension Color {
-    // Primary brand colors
+    // Primary brand colors - same in both modes
     static let brandPink = Color(hex: "FF69B4")
     static let brandGold = Color(hex: "FFD700")
 
-    // Background colors (dark mode)
-    static let bgPrimary = Color(hex: "030712")      // Deep dark blue
-    static let bgCard = Color(hex: "0c1321")         // Card background
-    static let bgCardEnd = Color(hex: "090f1b")      // Card gradient end
-
-    // Semantic colors
+    // Semantic colors - same in both modes
     static let success = Color(hex: "22c55e")        // Green
     static let warning = Color(hex: "FFD700")        // Gold
     static let error = Color(hex: "ef4444")          // Red
-
-    // Text colors
-    static let textPrimary = Color(hex: "f9fafb")    // Gray-50
-    static let textSecondary = Color(hex: "9ca3af")  // Gray-400
-    static let textTertiary = Color(hex: "6b7280")   // Gray-500
-
-    // Border
-    static let border = Color(hex: "1e293b")         // Subtle border
 
     // Initialize from hex string
     init(hex: String) {
@@ -50,6 +38,92 @@ extension Color {
     }
 }
 
+// MARK: - Adaptive Colors (change based on color scheme)
+extension Color {
+    // Background colors
+    static var bgPrimary: Color {
+        Color(UIColor { traitCollection in
+            traitCollection.userInterfaceStyle == .dark
+                ? UIColor(hex: "030712")    // Deep dark blue
+                : UIColor(hex: "f8fafc")    // Light gray-50
+        })
+    }
+
+    static var bgCard: Color {
+        Color(UIColor { traitCollection in
+            traitCollection.userInterfaceStyle == .dark
+                ? UIColor(hex: "0c1321")    // Dark card
+                : UIColor(hex: "ffffff")    // White
+        })
+    }
+
+    static var bgCardEnd: Color {
+        Color(UIColor { traitCollection in
+            traitCollection.userInterfaceStyle == .dark
+                ? UIColor(hex: "090f1b")    // Dark card end
+                : UIColor(hex: "f1f5f9")    // Light slate-100
+        })
+    }
+
+    // Text colors
+    static var textPrimary: Color {
+        Color(UIColor { traitCollection in
+            traitCollection.userInterfaceStyle == .dark
+                ? UIColor(hex: "f9fafb")    // Gray-50
+                : UIColor(hex: "0f172a")    // Slate-900
+        })
+    }
+
+    static var textSecondary: Color {
+        Color(UIColor { traitCollection in
+            traitCollection.userInterfaceStyle == .dark
+                ? UIColor(hex: "9ca3af")    // Gray-400
+                : UIColor(hex: "64748b")    // Slate-500
+        })
+    }
+
+    static var textTertiary: Color {
+        Color(UIColor { traitCollection in
+            traitCollection.userInterfaceStyle == .dark
+                ? UIColor(hex: "6b7280")    // Gray-500
+                : UIColor(hex: "94a3b8")    // Slate-400
+        })
+    }
+
+    // Border
+    static var border: Color {
+        Color(UIColor { traitCollection in
+            traitCollection.userInterfaceStyle == .dark
+                ? UIColor(hex: "1e293b")    // Slate-800
+                : UIColor(hex: "e2e8f0")    // Slate-200
+        })
+    }
+}
+
+// MARK: - UIColor Extension for hex
+extension UIColor {
+    convenience init(hex: String) {
+        let hex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
+        var int: UInt64 = 0
+        Scanner(string: hex).scanHexInt64(&int)
+        let a, r, g, b: UInt64
+        switch hex.count {
+        case 6: // RGB (24-bit)
+            (a, r, g, b) = (255, int >> 16, int >> 8 & 0xFF, int & 0xFF)
+        case 8: // ARGB (32-bit)
+            (a, r, g, b) = (int >> 24, int >> 16 & 0xFF, int >> 8 & 0xFF, int & 0xFF)
+        default:
+            (a, r, g, b) = (255, 0, 0, 0)
+        }
+        self.init(
+            red: CGFloat(r) / 255,
+            green: CGFloat(g) / 255,
+            blue: CGFloat(b) / 255,
+            alpha: CGFloat(a) / 255
+        )
+    }
+}
+
 // MARK: - Brand Gradients
 extension LinearGradient {
     static let brandGradient = LinearGradient(
@@ -64,11 +138,13 @@ extension LinearGradient {
         endPoint: .bottomTrailing
     )
 
-    static let cardGradient = LinearGradient(
-        colors: [.bgCard, .bgCardEnd],
-        startPoint: .top,
-        endPoint: .bottom
-    )
+    static var cardGradient: LinearGradient {
+        LinearGradient(
+            colors: [.bgCard, .bgCardEnd],
+            startPoint: .top,
+            endPoint: .bottom
+        )
+    }
 }
 
 // MARK: - Reusable Components
@@ -99,6 +175,7 @@ struct GradientBlob: View {
 }
 
 struct BrandCard<Content: View>: View {
+    @Environment(\.colorScheme) private var colorScheme
     let content: Content
     var padding: CGFloat = 16
 
@@ -110,12 +187,17 @@ struct BrandCard<Content: View>: View {
     var body: some View {
         content
             .padding(padding)
-            .background(LinearGradient.cardGradient)
+            .background(
+                colorScheme == .dark
+                    ? AnyShapeStyle(LinearGradient.cardGradient)
+                    : AnyShapeStyle(Color.bgCard)
+            )
             .clipShape(RoundedRectangle(cornerRadius: 16))
             .overlay(
                 RoundedRectangle(cornerRadius: 16)
                     .stroke(Color.border, lineWidth: 1)
             )
+            .shadow(color: colorScheme == .light ? .black.opacity(0.05) : .clear, radius: 8, y: 2)
     }
 }
 
@@ -137,7 +219,7 @@ struct GradientAvatar: View {
                 .fill(LinearGradient.brandGradientVertical)
             Text(initials.isEmpty ? "?" : initials)
                 .font(.system(size: size * 0.4, weight: .semibold))
-                .foregroundStyle(Color.bgPrimary)
+                .foregroundStyle(.white)
         }
         .frame(width: size, height: size)
     }
@@ -234,6 +316,7 @@ struct BrandButton: View {
 }
 
 struct HeroSection<Content: View>: View {
+    @Environment(\.colorScheme) private var colorScheme
     let content: Content
 
     init(@ViewBuilder content: () -> Content) {
@@ -243,7 +326,11 @@ struct HeroSection<Content: View>: View {
     var body: some View {
         ZStack {
             // Background
-            LinearGradient.cardGradient
+            if colorScheme == .dark {
+                LinearGradient.cardGradient
+            } else {
+                Color.bgCard
+            }
 
             // Gradient blobs
             GradientBlob(color: .brandPink, size: 120)
@@ -261,6 +348,7 @@ struct HeroSection<Content: View>: View {
             RoundedRectangle(cornerRadius: 20)
                 .stroke(Color.border, lineWidth: 1)
         )
+        .shadow(color: colorScheme == .light ? .black.opacity(0.05) : .clear, radius: 8, y: 2)
     }
 }
 
