@@ -43,11 +43,19 @@ class Database {
     // MARK: - Functions
 
     func invoke(_ functionName: String, body: some Encodable) async throws {
+        // Ensure auth token is set before invoking (workaround for SDK auth header issue)
+        if let accessToken = try? await client.auth.session.accessToken {
+            client.functions.setAuth(token: accessToken)
+        }
         try await client.functions.invoke(functionName, options: .init(body: body))
     }
 
     func invoke<T: Decodable>(_ functionName: String, body: some Encodable) async throws -> T {
-        try await client.functions.invoke(functionName, options: .init(body: body))
+        // Ensure auth token is set before invoking (workaround for SDK auth header issue)
+        if let accessToken = try? await client.auth.session.accessToken {
+            client.functions.setAuth(token: accessToken)
+        }
+        return try await client.functions.invoke(functionName, options: .init(body: body))
     }
 }
 
