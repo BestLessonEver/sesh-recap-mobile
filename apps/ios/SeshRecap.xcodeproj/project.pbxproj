@@ -1,0 +1,592 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		044C8354443572114F7FA5A0 /* Environment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CC484EBBB73AF5512F118AE /* Environment.swift */; };
+		0AB8CA0DDEB68A23C95F9E42 /* DashboardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF9F6DBACDA5D2CA902A10CE /* DashboardViewModel.swift */; };
+		0B2FBACF36E1A2B21EAF604D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D4E405DED23A5A8083A351B8 /* Assets.xcassets */; };
+		1AFD88C7047BBEABE48B9454 /* AttendantListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8F529F94B2937097ADED6B6 /* AttendantListView.swift */; };
+		23C8B8A81A2DFCBD52C9202B /* SessionsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A6AD28AE96B04AB29D24269 /* SessionsViewModel.swift */; };
+		2F7073322EBCF360C0605F19 /* RecordingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BF8A63AF3FACBBA6D58B9F1 /* RecordingViewModel.swift */; };
+		3FF7AF3F5B9ECA7BF4F55687 /* RecordingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFB3BE175BF8E0712A866D04 /* RecordingService.swift */; };
+		4320C9CA508D24E9F8E6CFD4 /* Session.swift in Sources */ = {isa = PBXBuildFile; fileRef = A35F4F0059C68CE89C86BD25 /* Session.swift */; };
+		488EC7E58C01D0C81D8C0691 /* WelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 597EF5055F47618786B06E13 /* WelcomeView.swift */; };
+		4FC383267D346BF1A5DFCE78 /* StorageService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2C754DE32ACD3DE51DEE749 /* StorageService.swift */; };
+		52F854C6285C9D2659832137 /* Professional.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6F6D23B2B6FE43C129EA69B /* Professional.swift */; };
+		59A076AF6FF1A9EA9C0F5A9E /* NewSessionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B53F4BD877D7D298915799DD /* NewSessionView.swift */; };
+		602D25A0A05BB5D19CCFE9A4 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1CD13F8EEA15E33774F9611 /* SettingsView.swift */; };
+		62354AD2E79203CA1994A8A9 /* AuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E66F1DEC36A59F9D8304CAC6 /* AuthService.swift */; };
+		67C7CFFDE711C33BB1A686DE /* RevenueCat in Frameworks */ = {isa = PBXBuildFile; productRef = 0FBC944567294EC5CFD099C3 /* RevenueCat */; };
+		6B07C46D82A8705019CBC88C /* AttendantDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C09010E6280C3B888AEA66C6 /* AttendantDetailView.swift */; };
+		6C66A7CF67159A1264B0E1F2 /* TeamView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F7F24A2164D6FA1176F39EA /* TeamView.swift */; };
+		8D77173990E2B635B50EB702 /* supabase-swift in Frameworks */ = {isa = PBXBuildFile; productRef = BA1CAC3818E3E75002A38280 /* supabase-swift */; };
+		96DB59CE4214EB0E709C3AE9 /* AddAttendantView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13F1E12DFBA5DED3909466D2 /* AddAttendantView.swift */; };
+		A468A7D7AF397565602D30B5 /* SessionDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D2C8EEE8DC955B8E317A803 /* SessionDetailView.swift */; };
+		AA9927A842342535EE863A43 /* AttendantsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A11D6EF3ECC0077C0AD1316 /* AttendantsViewModel.swift */; };
+		AC7203C3A1BE0EF2A7DBEA86 /* SignInView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 315443CB452B1F628C9D3733 /* SignInView.swift */; };
+		B094D6CFA0A52349179C3B12 /* SessionListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5FC3311B32CB3EF7615E65D /* SessionListView.swift */; };
+		BE8B3ED4FCF006E86648D500 /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A6A21D73899C6CCFDC17407 /* MainTabView.swift */; };
+		D1AAA1D8CB64CBA7FF748CD0 /* Attendant.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2193C81BC59AAE87615DCBF /* Attendant.swift */; };
+		D2946CF1C42A8C060A8B1456 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86760AE7F17DC2661DBDB51B /* NotificationService.swift */; };
+		D5BE2795835FFA7DFED8E0B1 /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54881C23958C23DED55ED720 /* DashboardView.swift */; };
+		DB5808ED99CB4478C322F7D2 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B72F327E139C75361994B563 /* ProfileView.swift */; };
+		E0A385996CB2DF533963D653 /* SubscriptionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2565458E303C8F138B5EEA8 /* SubscriptionView.swift */; };
+		E943E88982E1D70658AB4B6E /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1CF4D83EFC9D47434DF3F1B /* AppDelegate.swift */; };
+		EB002105653DC98F972D0BBF /* Recap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 182ABF6FE2C44B00F544C8CB /* Recap.swift */; };
+		F1709DD4A038125F6A9D1491 /* SubscriptionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9FC5BE735E7970E060CD8EB /* SubscriptionService.swift */; };
+		F87F30336FF6E39AEC4CCF32 /* RecapEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CE56FBBDAC0FED4C60FA786 /* RecapEditorView.swift */; };
+		FC7DEFB53D249AF54966448D /* SupabaseClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 663896D307B30A12D321AB44 /* SupabaseClient.swift */; };
+		FD7D833826DD5BC0D9B29F7E /* SeshRecapApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9197A903E749CCE5F4437F0 /* SeshRecapApp.swift */; };
+		FF92594933364804A8D0F70F /* AuthViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06E998BCA8334DD8B39357D2 /* AuthViewModel.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		06E998BCA8334DD8B39357D2 /* AuthViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthViewModel.swift; sourceTree = "<group>"; };
+		0BF8A63AF3FACBBA6D58B9F1 /* RecordingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingViewModel.swift; sourceTree = "<group>"; };
+		13F1E12DFBA5DED3909466D2 /* AddAttendantView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddAttendantView.swift; sourceTree = "<group>"; };
+		182ABF6FE2C44B00F544C8CB /* Recap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Recap.swift; sourceTree = "<group>"; };
+		1A11D6EF3ECC0077C0AD1316 /* AttendantsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttendantsViewModel.swift; sourceTree = "<group>"; };
+		315443CB452B1F628C9D3733 /* SignInView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInView.swift; sourceTree = "<group>"; };
+		3A046754D1990BF4B2CF1FEB /* Secrets.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Secrets.xcconfig; sourceTree = "<group>"; };
+		3A6AD28AE96B04AB29D24269 /* SessionsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionsViewModel.swift; sourceTree = "<group>"; };
+		3C52A9AD38C40B61F532FB12 /* SeshRecap.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = SeshRecap.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		4ADF3220F4AD47555175066B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		54881C23958C23DED55ED720 /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
+		597EF5055F47618786B06E13 /* WelcomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeView.swift; sourceTree = "<group>"; };
+		663896D307B30A12D321AB44 /* SupabaseClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupabaseClient.swift; sourceTree = "<group>"; };
+		7D2C8EEE8DC955B8E317A803 /* SessionDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionDetailView.swift; sourceTree = "<group>"; };
+		86760AE7F17DC2661DBDB51B /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
+		8A6A21D73899C6CCFDC17407 /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
+		8CC484EBBB73AF5512F118AE /* Environment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Environment.swift; sourceTree = "<group>"; };
+		8F7F24A2164D6FA1176F39EA /* TeamView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TeamView.swift; sourceTree = "<group>"; };
+		9CE56FBBDAC0FED4C60FA786 /* RecapEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecapEditorView.swift; sourceTree = "<group>"; };
+		A35F4F0059C68CE89C86BD25 /* Session.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Session.swift; sourceTree = "<group>"; };
+		AFB3BE175BF8E0712A866D04 /* RecordingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingService.swift; sourceTree = "<group>"; };
+		B1CF4D83EFC9D47434DF3F1B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		B2AE9B25BE65E333F6656F52 /* SeshRecap.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SeshRecap.entitlements; sourceTree = "<group>"; };
+		B53F4BD877D7D298915799DD /* NewSessionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewSessionView.swift; sourceTree = "<group>"; };
+		B72F327E139C75361994B563 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
+		C09010E6280C3B888AEA66C6 /* AttendantDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttendantDetailView.swift; sourceTree = "<group>"; };
+		C2193C81BC59AAE87615DCBF /* Attendant.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Attendant.swift; sourceTree = "<group>"; };
+		D4E405DED23A5A8083A351B8 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		DF9F6DBACDA5D2CA902A10CE /* DashboardViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardViewModel.swift; sourceTree = "<group>"; };
+		E2565458E303C8F138B5EEA8 /* SubscriptionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionView.swift; sourceTree = "<group>"; };
+		E2C754DE32ACD3DE51DEE749 /* StorageService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageService.swift; sourceTree = "<group>"; };
+		E66F1DEC36A59F9D8304CAC6 /* AuthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthService.swift; sourceTree = "<group>"; };
+		E6F6D23B2B6FE43C129EA69B /* Professional.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Professional.swift; sourceTree = "<group>"; };
+		E8F529F94B2937097ADED6B6 /* AttendantListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttendantListView.swift; sourceTree = "<group>"; };
+		E9197A903E749CCE5F4437F0 /* SeshRecapApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeshRecapApp.swift; sourceTree = "<group>"; };
+		E9FC5BE735E7970E060CD8EB /* SubscriptionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionService.swift; sourceTree = "<group>"; };
+		F1CD13F8EEA15E33774F9611 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		F5FC3311B32CB3EF7615E65D /* SessionListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionListView.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		75FA4465A1BBE9D98A8E4901 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8D77173990E2B635B50EB702 /* supabase-swift in Frameworks */,
+				67C7CFFDE711C33BB1A686DE /* RevenueCat in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		1D1DB72CF4FD063FA61DBF72 /* Sessions */ = {
+			isa = PBXGroup;
+			children = (
+				9CE56FBBDAC0FED4C60FA786 /* RecapEditorView.swift */,
+				7D2C8EEE8DC955B8E317A803 /* SessionDetailView.swift */,
+				F5FC3311B32CB3EF7615E65D /* SessionListView.swift */,
+			);
+			path = Sessions;
+			sourceTree = "<group>";
+		};
+		2393FF60B317643855A35DAC /* Config */ = {
+			isa = PBXGroup;
+			children = (
+				8CC484EBBB73AF5512F118AE /* Environment.swift */,
+				3A046754D1990BF4B2CF1FEB /* Secrets.xcconfig */,
+			);
+			path = Config;
+			sourceTree = "<group>";
+		};
+		4F4ADD4B757B14F739C98ECE /* App */ = {
+			isa = PBXGroup;
+			children = (
+				B1CF4D83EFC9D47434DF3F1B /* AppDelegate.swift */,
+				E9197A903E749CCE5F4437F0 /* SeshRecapApp.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		5944EBB64A2C0952E859E7FC /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				B72F327E139C75361994B563 /* ProfileView.swift */,
+				F1CD13F8EEA15E33774F9611 /* SettingsView.swift */,
+				E2565458E303C8F138B5EEA8 /* SubscriptionView.swift */,
+				8F7F24A2164D6FA1176F39EA /* TeamView.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
+		6D04F1B9FEB8D87B5DC05877 /* Main */ = {
+			isa = PBXGroup;
+			children = (
+				54881C23958C23DED55ED720 /* DashboardView.swift */,
+				8A6A21D73899C6CCFDC17407 /* MainTabView.swift */,
+			);
+			path = Main;
+			sourceTree = "<group>";
+		};
+		75852C11E84BF8B99D8AAD79 /* Onboarding */ = {
+			isa = PBXGroup;
+			children = (
+				315443CB452B1F628C9D3733 /* SignInView.swift */,
+				597EF5055F47618786B06E13 /* WelcomeView.swift */,
+			);
+			path = Onboarding;
+			sourceTree = "<group>";
+		};
+		91DFDD8A4B66540A1E7F9AF1 /* Attendants */ = {
+			isa = PBXGroup;
+			children = (
+				13F1E12DFBA5DED3909466D2 /* AddAttendantView.swift */,
+				C09010E6280C3B888AEA66C6 /* AttendantDetailView.swift */,
+				E8F529F94B2937097ADED6B6 /* AttendantListView.swift */,
+			);
+			path = Attendants;
+			sourceTree = "<group>";
+		};
+		99CFCD78ED86B88C4F4FE2BF /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				3C52A9AD38C40B61F532FB12 /* SeshRecap.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		9FCA9CCAE12014AF0C47D02E /* SeshRecap */ = {
+			isa = PBXGroup;
+			children = (
+				4F4ADD4B757B14F739C98ECE /* App */,
+				2393FF60B317643855A35DAC /* Config */,
+				D36C7BEF6FD3C6E18B6289F7 /* Models */,
+				AE0A34E4BEE0827C55D97DAB /* Services */,
+				C8D0B37AD5D2275D7EA9FCAE /* ViewModels */,
+				AAB0E349A3BB9D2A8D99515B /* Views */,
+				D4E405DED23A5A8083A351B8 /* Assets.xcassets */,
+				4ADF3220F4AD47555175066B /* Info.plist */,
+				B2AE9B25BE65E333F6656F52 /* SeshRecap.entitlements */,
+			);
+			path = SeshRecap;
+			sourceTree = "<group>";
+		};
+		A7963D6F1E3787488B2A5852 = {
+			isa = PBXGroup;
+			children = (
+				9FCA9CCAE12014AF0C47D02E /* SeshRecap */,
+				99CFCD78ED86B88C4F4FE2BF /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		AAB0E349A3BB9D2A8D99515B /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				91DFDD8A4B66540A1E7F9AF1 /* Attendants */,
+				6D04F1B9FEB8D87B5DC05877 /* Main */,
+				75852C11E84BF8B99D8AAD79 /* Onboarding */,
+				C89B1E2A02BD5EA1E5459249 /* Recording */,
+				1D1DB72CF4FD063FA61DBF72 /* Sessions */,
+				5944EBB64A2C0952E859E7FC /* Settings */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		AE0A34E4BEE0827C55D97DAB /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				E66F1DEC36A59F9D8304CAC6 /* AuthService.swift */,
+				86760AE7F17DC2661DBDB51B /* NotificationService.swift */,
+				AFB3BE175BF8E0712A866D04 /* RecordingService.swift */,
+				E2C754DE32ACD3DE51DEE749 /* StorageService.swift */,
+				E9FC5BE735E7970E060CD8EB /* SubscriptionService.swift */,
+				663896D307B30A12D321AB44 /* SupabaseClient.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		C89B1E2A02BD5EA1E5459249 /* Recording */ = {
+			isa = PBXGroup;
+			children = (
+				B53F4BD877D7D298915799DD /* NewSessionView.swift */,
+			);
+			path = Recording;
+			sourceTree = "<group>";
+		};
+		C8D0B37AD5D2275D7EA9FCAE /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				1A11D6EF3ECC0077C0AD1316 /* AttendantsViewModel.swift */,
+				06E998BCA8334DD8B39357D2 /* AuthViewModel.swift */,
+				DF9F6DBACDA5D2CA902A10CE /* DashboardViewModel.swift */,
+				0BF8A63AF3FACBBA6D58B9F1 /* RecordingViewModel.swift */,
+				3A6AD28AE96B04AB29D24269 /* SessionsViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		D36C7BEF6FD3C6E18B6289F7 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				C2193C81BC59AAE87615DCBF /* Attendant.swift */,
+				E6F6D23B2B6FE43C129EA69B /* Professional.swift */,
+				182ABF6FE2C44B00F544C8CB /* Recap.swift */,
+				A35F4F0059C68CE89C86BD25 /* Session.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		EF2CD65B9355D09F9527984A /* SeshRecap */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3FA8CDBD12649F63DEBC5629 /* Build configuration list for PBXNativeTarget "SeshRecap" */;
+			buildPhases = (
+				82CB3E6BF963F85ACEE570EB /* Sources */,
+				9A955AD8ACCD1096C8C07D49 /* Resources */,
+				75FA4465A1BBE9D98A8E4901 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = SeshRecap;
+			packageProductDependencies = (
+				BA1CAC3818E3E75002A38280 /* supabase-swift */,
+				0FBC944567294EC5CFD099C3 /* RevenueCat */,
+			);
+			productName = SeshRecap;
+			productReference = 3C52A9AD38C40B61F532FB12 /* SeshRecap.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		D8E3568573C04D48C1CA87E8 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+					EF2CD65B9355D09F9527984A = {
+						DevelopmentTeam = "";
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = CA656BBE4C38FA863210BAA8 /* Build configuration list for PBXProject "SeshRecap" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = A7963D6F1E3787488B2A5852;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				6CB67C4DACBE47259609BFF5 /* XCRemoteSwiftPackageReference "purchases-ios" */,
+				E015EAC84CC280C9F94DD6F0 /* XCRemoteSwiftPackageReference "supabase-swift" */,
+			);
+			preferredProjectObjectVersion = 77;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				EF2CD65B9355D09F9527984A /* SeshRecap */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		9A955AD8ACCD1096C8C07D49 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0B2FBACF36E1A2B21EAF604D /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		82CB3E6BF963F85ACEE570EB /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				96DB59CE4214EB0E709C3AE9 /* AddAttendantView.swift in Sources */,
+				E943E88982E1D70658AB4B6E /* AppDelegate.swift in Sources */,
+				D1AAA1D8CB64CBA7FF748CD0 /* Attendant.swift in Sources */,
+				6B07C46D82A8705019CBC88C /* AttendantDetailView.swift in Sources */,
+				1AFD88C7047BBEABE48B9454 /* AttendantListView.swift in Sources */,
+				AA9927A842342535EE863A43 /* AttendantsViewModel.swift in Sources */,
+				62354AD2E79203CA1994A8A9 /* AuthService.swift in Sources */,
+				FF92594933364804A8D0F70F /* AuthViewModel.swift in Sources */,
+				D5BE2795835FFA7DFED8E0B1 /* DashboardView.swift in Sources */,
+				0AB8CA0DDEB68A23C95F9E42 /* DashboardViewModel.swift in Sources */,
+				044C8354443572114F7FA5A0 /* Environment.swift in Sources */,
+				BE8B3ED4FCF006E86648D500 /* MainTabView.swift in Sources */,
+				59A076AF6FF1A9EA9C0F5A9E /* NewSessionView.swift in Sources */,
+				D2946CF1C42A8C060A8B1456 /* NotificationService.swift in Sources */,
+				52F854C6285C9D2659832137 /* Professional.swift in Sources */,
+				DB5808ED99CB4478C322F7D2 /* ProfileView.swift in Sources */,
+				EB002105653DC98F972D0BBF /* Recap.swift in Sources */,
+				F87F30336FF6E39AEC4CCF32 /* RecapEditorView.swift in Sources */,
+				3FF7AF3F5B9ECA7BF4F55687 /* RecordingService.swift in Sources */,
+				2F7073322EBCF360C0605F19 /* RecordingViewModel.swift in Sources */,
+				FD7D833826DD5BC0D9B29F7E /* SeshRecapApp.swift in Sources */,
+				4320C9CA508D24E9F8E6CFD4 /* Session.swift in Sources */,
+				A468A7D7AF397565602D30B5 /* SessionDetailView.swift in Sources */,
+				B094D6CFA0A52349179C3B12 /* SessionListView.swift in Sources */,
+				23C8B8A81A2DFCBD52C9202B /* SessionsViewModel.swift in Sources */,
+				602D25A0A05BB5D19CCFE9A4 /* SettingsView.swift in Sources */,
+				AC7203C3A1BE0EF2A7DBEA86 /* SignInView.swift in Sources */,
+				4FC383267D346BF1A5DFCE78 /* StorageService.swift in Sources */,
+				F1709DD4A038125F6A9D1491 /* SubscriptionService.swift in Sources */,
+				E0A385996CB2DF533963D653 /* SubscriptionView.swift in Sources */,
+				FC7DEFB53D249AF54966448D /* SupabaseClient.swift in Sources */,
+				6C66A7CF67159A1264B0E1F2 /* TeamView.swift in Sources */,
+				488EC7E58C01D0C81D8C0691 /* WelcomeView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		0B597AE859FFFB2B8F3EF98F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = SeshRecap/SeshRecap.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				ENABLE_PREVIEWS = YES;
+				INFOPLIST_FILE = SeshRecap/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.seshrecap.app;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				XCCONFIG_FILE = "$(SRCROOT)/SeshRecap/Config/Secrets.xcconfig";
+			};
+			name = Debug;
+		};
+		5300CDCA401C73A65FF66C29 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.0.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.9;
+			};
+			name = Debug;
+		};
+		8FFF7E6D5B8A4F0E66CB9EC6 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = SeshRecap/SeshRecap.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				ENABLE_PREVIEWS = YES;
+				INFOPLIST_FILE = SeshRecap/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.seshrecap.app;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				XCCONFIG_FILE = "$(SRCROOT)/SeshRecap/Config/Secrets.xcconfig";
+			};
+			name = Release;
+		};
+		CA7EA019F262A0E254531BDF /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = "";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.0.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.9;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		3FA8CDBD12649F63DEBC5629 /* Build configuration list for PBXNativeTarget "SeshRecap" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0B597AE859FFFB2B8F3EF98F /* Debug */,
+				8FFF7E6D5B8A4F0E66CB9EC6 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		CA656BBE4C38FA863210BAA8 /* Build configuration list for PBXProject "SeshRecap" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5300CDCA401C73A65FF66C29 /* Debug */,
+				CA7EA019F262A0E254531BDF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		6CB67C4DACBE47259609BFF5 /* XCRemoteSwiftPackageReference "purchases-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/RevenueCat/purchases-ios";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 4.0.0;
+			};
+		};
+		E015EAC84CC280C9F94DD6F0 /* XCRemoteSwiftPackageReference "supabase-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/supabase/supabase-swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		0FBC944567294EC5CFD099C3 /* RevenueCat */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 6CB67C4DACBE47259609BFF5 /* XCRemoteSwiftPackageReference "purchases-ios" */;
+			productName = RevenueCat;
+		};
+		BA1CAC3818E3E75002A38280 /* supabase-swift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E015EAC84CC280C9F94DD6F0 /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = "supabase-swift";
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = D8E3568573C04D48C1CA87E8 /* Project object */;
+}
