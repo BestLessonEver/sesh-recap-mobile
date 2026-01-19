@@ -16,28 +16,44 @@ struct SessionListView: View {
 
     var body: some View {
         NavigationStack {
-            Group {
+            ZStack {
+                Color.bgPrimary
+                    .ignoresSafeArea()
+
                 if viewModel.sessions.isEmpty && !viewModel.isLoading {
-                    ContentUnavailableView(
-                        "No Sessions",
-                        systemImage: "waveform",
-                        description: Text("Record your first session to get started")
-                    )
+                    VStack(spacing: 16) {
+                        Image(systemName: "waveform")
+                            .font(.system(size: 50))
+                            .foregroundStyle(Color.textTertiary)
+                        Text("No Sessions")
+                            .font(.title2)
+                            .fontWeight(.bold)
+                            .foregroundStyle(Color.textPrimary)
+                        Text("Record your first session to get started")
+                            .font(.subheadline)
+                            .foregroundStyle(Color.textSecondary)
+                    }
                 } else {
-                    List {
-                        ForEach(filteredSessions) { session in
-                            NavigationLink {
-                                SessionDetailView(session: session, viewModel: viewModel)
-                            } label: {
-                                SessionListRow(session: session)
+                    ScrollView {
+                        LazyVStack(spacing: 12) {
+                            ForEach(filteredSessions) { session in
+                                NavigationLink {
+                                    SessionDetailView(session: session, viewModel: viewModel)
+                                } label: {
+                                    BrandSessionListRow(session: session)
+                                }
+                                .buttonStyle(.plain)
                             }
                         }
-                        .onDelete(perform: deleteSessions)
+                        .padding()
+                        .padding(.bottom, 80)
                     }
-                    .listStyle(.plain)
                 }
             }
             .navigationTitle("Sessions")
+            .navigationBarTitleDisplayMode(.large)
+            .toolbarBackground(Color.bgPrimary, for: .navigationBar)
+            .toolbarColorScheme(.dark, for: .navigationBar)
             .searchable(text: $searchText, prompt: "Search sessions")
             .refreshable {
                 await viewModel.loadSessions(forceRefresh: true)
@@ -47,106 +63,98 @@ struct SessionListView: View {
             }
         }
     }
-
-    private func deleteSessions(at offsets: IndexSet) {
-        Task {
-            for index in offsets {
-                let session = filteredSessions[index]
-                try? await viewModel.deleteSession(session.id)
-            }
-        }
-    }
 }
 
-struct SessionListRow: View {
+struct BrandSessionListRow: View {
     let session: Session
 
     var body: some View {
-        HStack(spacing: 12) {
-            // Status Icon
-            statusIcon
-                .frame(width: 32)
+        BrandCard(padding: 16) {
+            HStack(spacing: 12) {
+                // Status Icon
+                statusIcon
+                    .frame(width: 40)
 
-            VStack(alignment: .leading, spacing: 4) {
-                Text(session.displayTitle)
-                    .font(.body)
-                    .lineLimit(1)
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(session.displayTitle)
+                        .font(.body)
+                        .fontWeight(.medium)
+                        .foregroundStyle(Color.textPrimary)
+                        .lineLimit(1)
 
-                HStack(spacing: 8) {
-                    if let attendant = session.attendant {
-                        Label(attendant.name, systemImage: "person.fill")
+                    HStack(spacing: 8) {
+                        if let attendant = session.attendant {
+                            Label(attendant.name, systemImage: "person.fill")
+                                .font(.caption)
+                                .foregroundStyle(Color.textSecondary)
+                        }
+
+                        Label(session.formattedDuration, systemImage: "clock")
                             .font(.caption)
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(Color.textSecondary)
                     }
+                }
 
-                    Label(session.formattedDuration, systemImage: "clock")
+                Spacer()
+
+                VStack(alignment: .trailing, spacing: 6) {
+                    Text(session.createdAt, style: .date)
                         .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(Color.textTertiary)
+
+                    recapBadge
                 }
             }
-
-            Spacer()
-
-            VStack(alignment: .trailing, spacing: 4) {
-                Text(session.createdAt, style: .date)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-
-                recapBadge
-            }
         }
-        .padding(.vertical, 4)
     }
 
     @ViewBuilder
     private var statusIcon: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: 8)
+                .fill(statusColor.opacity(0.15))
+                .frame(width: 40, height: 40)
+
+            switch session.sessionStatus {
+            case .recording:
+                Image(systemName: "waveform")
+                    .foregroundStyle(statusColor)
+            case .uploading:
+                ProgressView()
+                    .tint(statusColor)
+            case .transcribing:
+                Image(systemName: "text.bubble")
+                    .foregroundStyle(statusColor)
+            case .ready:
+                Image(systemName: "checkmark")
+                    .foregroundStyle(statusColor)
+            case .error:
+                Image(systemName: "exclamationmark")
+                    .foregroundStyle(statusColor)
+            }
+        }
+    }
+
+    private var statusColor: Color {
         switch session.sessionStatus {
-        case .recording:
-            Image(systemName: "waveform")
-                .foregroundStyle(.red)
-        case .uploading:
-            ProgressView()
-        case .transcribing:
-            Image(systemName: "text.bubble")
-                .foregroundStyle(.orange)
-        case .ready:
-            Image(systemName: "checkmark.circle.fill")
-                .foregroundStyle(.green)
-        case .error:
-            Image(systemName: "exclamationmark.circle.fill")
-                .foregroundStyle(.red)
+        case .recording: return .error
+        case .uploading, .transcribing: return .warning
+        case .ready: return .success
+        case .error: return .error
         }
     }
 
     @ViewBuilder
     private var recapBadge: some View {
         if let recap = session.recap {
-            switch recap.status {
-            case .sent:
-                Text("Sent")
-                    .font(.caption2)
-                    .padding(.horizontal, 6)
-                    .padding(.vertical, 2)
-                    .background(.green.opacity(0.2))
-                    .foregroundStyle(.green)
-                    .clipShape(Capsule())
-            case .draft:
-                Text("Draft")
-                    .font(.caption2)
-                    .padding(.horizontal, 6)
-                    .padding(.vertical, 2)
-                    .background(.orange.opacity(0.2))
-                    .foregroundStyle(.orange)
-                    .clipShape(Capsule())
-            case .failed:
-                Text("Failed")
-                    .font(.caption2)
-                    .padding(.horizontal, 6)
-                    .padding(.vertical, 2)
-                    .background(.red.opacity(0.2))
-                    .foregroundStyle(.red)
-                    .clipShape(Capsule())
-            }
+            let status: StatusPill.Status = {
+                switch recap.status {
+                case .sent: return .sent
+                case .draft: return .draft
+                case .failed: return .error
+                }
+            }()
+            StatusPill(status: status)
         }
     }
 }

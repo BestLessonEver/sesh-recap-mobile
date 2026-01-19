@@ -9,41 +9,43 @@ struct MainTabView: View {
     @State private var showNewSession = false
 
     var body: some View {
-        TabView(selection: $selectedTab) {
-            DashboardView(
-                viewModel: DashboardViewModel(
-                    sessionsViewModel: sessionsViewModel,
-                    attendantsViewModel: attendantsViewModel
+        ZStack {
+            // Background
+            Color.bgPrimary
+                .ignoresSafeArea()
+
+            // Content
+            TabView(selection: $selectedTab) {
+                DashboardView(
+                    viewModel: DashboardViewModel(
+                        sessionsViewModel: sessionsViewModel,
+                        attendantsViewModel: attendantsViewModel
+                    )
                 )
-            )
-            .tabItem {
-                Label("Home", systemImage: "house.fill")
+                .tag(0)
+
+                SessionListView(viewModel: sessionsViewModel)
+                    .tag(1)
+
+                // Placeholder for record button
+                Color.clear
+                    .tag(2)
+
+                AttendantListView(viewModel: attendantsViewModel)
+                    .tag(3)
+
+                SettingsView()
+                    .tag(4)
             }
-            .tag(0)
 
-            SessionListView(viewModel: sessionsViewModel)
-                .tabItem {
-                    Label("Sessions", systemImage: "list.bullet")
-                }
-                .tag(1)
-
-            AttendantListView(viewModel: attendantsViewModel)
-                .tabItem {
-                    Label("Attendants", systemImage: "person.2.fill")
-                }
-                .tag(2)
-
-            SettingsView()
-                .tabItem {
-                    Label("Settings", systemImage: "gear")
-                }
-                .tag(3)
-        }
-        .overlay(alignment: .bottom) {
-            QuickRecordButton {
-                showNewSession = true
+            // Custom Tab Bar
+            VStack {
+                Spacer()
+                BrandTabBar(
+                    selectedTab: $selectedTab,
+                    onRecordTap: { showNewSession = true }
+                )
             }
-            .padding(.bottom, 60)
         }
         .sheet(isPresented: $showNewSession) {
             NewSessionView(
@@ -60,23 +62,104 @@ struct MainTabView: View {
     }
 }
 
-struct QuickRecordButton: View {
+// MARK: - Brand Tab Bar
+
+struct BrandTabBar: View {
+    @Binding var selectedTab: Int
+    let onRecordTap: () -> Void
+
+    private let tabs: [(icon: String, label: String, index: Int)] = [
+        ("house.fill", "Home", 0),
+        ("clock.fill", "Sessions", 1),
+        ("person.2.fill", "Attendants", 3),
+        ("gearshape.fill", "Settings", 4)
+    ]
+
+    var body: some View {
+        ZStack {
+            // Background blur
+            Rectangle()
+                .fill(.ultraThinMaterial)
+                .background(Color.bgPrimary.opacity(0.9))
+                .frame(height: 90)
+                .overlay(
+                    Rectangle()
+                        .frame(height: 1)
+                        .foregroundStyle(Color.border),
+                    alignment: .top
+                )
+
+            HStack(spacing: 0) {
+                // Left tabs
+                ForEach(tabs.prefix(2), id: \.index) { tab in
+                    TabBarButton(
+                        icon: tab.icon,
+                        label: tab.label,
+                        isSelected: selectedTab == tab.index
+                    ) {
+                        selectedTab = tab.index
+                    }
+                }
+
+                // Center record button
+                RecordButton(action: onRecordTap)
+                    .offset(y: -20)
+
+                // Right tabs
+                ForEach(tabs.suffix(2), id: \.index) { tab in
+                    TabBarButton(
+                        icon: tab.icon,
+                        label: tab.label,
+                        isSelected: selectedTab == tab.index
+                    ) {
+                        selectedTab = tab.index
+                    }
+                }
+            }
+            .padding(.horizontal, 8)
+            .padding(.bottom, 20)
+        }
+        .ignoresSafeArea(.all, edges: .bottom)
+    }
+}
+
+struct TabBarButton: View {
+    let icon: String
+    let label: String
+    let isSelected: Bool
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            VStack(spacing: 4) {
+                Image(systemName: icon)
+                    .font(.system(size: 20))
+                Text(label)
+                    .font(.system(size: 10, weight: .medium))
+            }
+            .foregroundStyle(isSelected ? Color.brandPink : Color.textSecondary)
+            .frame(maxWidth: .infinity)
+        }
+    }
+}
+
+struct RecordButton: View {
     let action: () -> Void
 
     var body: some View {
         Button(action: action) {
             ZStack {
                 Circle()
-                    .fill(Color.red)
-                    .frame(width: 64, height: 64)
-                    .shadow(color: .red.opacity(0.4), radius: 8, y: 4)
+                    .fill(Color.error)
+                    .frame(width: 60, height: 60)
+                    .shadow(color: .error.opacity(0.4), radius: 12, y: 4)
 
                 Image(systemName: "mic.fill")
                     .font(.title2)
                     .foregroundStyle(.white)
             }
         }
-        .accessibilityLabel("Start new recording")
+        .frame(maxWidth: .infinity)
     }
 }
 

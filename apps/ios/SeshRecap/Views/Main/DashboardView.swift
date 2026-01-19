@@ -6,93 +6,121 @@ struct DashboardView: View {
 
     var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack(spacing: 24) {
-                    // Welcome Header
-                    HStack {
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text("Welcome back,")
-                                .foregroundStyle(.secondary)
-                            Text(authViewModel.currentProfessional?.name ?? "Professional")
-                                .font(.title2)
-                                .fontWeight(.bold)
-                        }
-                        Spacer()
-                    }
-                    .padding(.horizontal)
+            ZStack {
+                // Background
+                Color.bgPrimary
+                    .ignoresSafeArea()
 
-                    // Stats Cards
-                    LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
-                        StatCard(
-                            title: "This Week",
-                            value: "\(viewModel.stats.thisWeekSessions)",
-                            subtitle: "sessions",
-                            icon: "calendar",
-                            color: .blue
-                        )
-
-                        StatCard(
-                            title: "Time Recorded",
-                            value: viewModel.stats.formattedThisWeekTime,
-                            subtitle: "this week",
-                            icon: "clock.fill",
-                            color: .green
-                        )
-
-                        StatCard(
-                            title: "Attendants",
-                            value: "\(viewModel.stats.totalAttendants)",
-                            subtitle: "active",
-                            icon: "person.2.fill",
-                            color: .purple
-                        )
-
-                        StatCard(
-                            title: "Recaps Sent",
-                            value: "\(viewModel.stats.sentRecaps)",
-                            subtitle: "total",
-                            icon: "envelope.fill",
-                            color: .orange
-                        )
-                    }
-                    .padding(.horizontal)
-
-                    // Recent Sessions
-                    VStack(alignment: .leading, spacing: 12) {
-                        HStack {
-                            Text("Recent Sessions")
-                                .font(.headline)
-                            Spacer()
-                            NavigationLink("See All") {
-                                SessionListView(viewModel: viewModel.sessionsViewModel)
+                ScrollView {
+                    VStack(spacing: 24) {
+                        // Hero Section
+                        HeroSection {
+                            HStack {
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text("Welcome back,")
+                                        .foregroundStyle(Color.textSecondary)
+                                    Text(authViewModel.currentProfessional?.name ?? "Professional")
+                                        .font(.title2)
+                                        .fontWeight(.bold)
+                                        .foregroundStyle(Color.textPrimary)
+                                }
+                                Spacer()
+                                GradientAvatar(
+                                    name: authViewModel.currentProfessional?.name ?? "U",
+                                    size: 48
+                                )
                             }
-                            .font(.subheadline)
                         }
                         .padding(.horizontal)
 
-                        if viewModel.recentSessions.isEmpty {
-                            ContentUnavailableView(
-                                "No Sessions Yet",
-                                systemImage: "waveform",
-                                description: Text("Tap the record button to start your first session")
+                        // Stats Cards
+                        LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
+                            BrandStatCard(
+                                title: "Total Sessions",
+                                value: "\(viewModel.stats.thisWeekSessions)",
+                                icon: "clock.fill",
+                                iconColor: .brandPink
                             )
-                            .frame(height: 200)
-                        } else {
-                            ForEach(viewModel.recentSessions) { session in
+
+                            BrandStatCard(
+                                title: "Attendants",
+                                value: "\(viewModel.stats.totalAttendants)",
+                                icon: "person.2.fill",
+                                iconColor: .brandGold
+                            )
+
+                            BrandStatCard(
+                                title: "Time Recorded",
+                                value: viewModel.stats.formattedThisWeekTime,
+                                icon: "waveform",
+                                iconColor: .success
+                            )
+
+                            BrandStatCard(
+                                title: "Recaps Sent",
+                                value: "\(viewModel.stats.sentRecaps)",
+                                icon: "envelope.fill",
+                                iconColor: .brandPink
+                            )
+                        }
+                        .padding(.horizontal)
+
+                        // Recent Sessions
+                        VStack(alignment: .leading, spacing: 12) {
+                            HStack {
+                                Text("Recent Sessions")
+                                    .font(.headline)
+                                    .foregroundStyle(Color.textPrimary)
+                                Spacer()
                                 NavigationLink {
-                                    SessionDetailView(session: session, viewModel: viewModel.sessionsViewModel)
+                                    SessionListView(viewModel: viewModel.sessionsViewModel)
                                 } label: {
-                                    SessionRow(session: session)
+                                    Text("View all")
+                                        .font(.subheadline)
+                                        .foregroundStyle(Color.brandPink)
                                 }
-                                .buttonStyle(.plain)
                             }
                             .padding(.horizontal)
+
+                            if viewModel.recentSessions.isEmpty {
+                                BrandCard {
+                                    VStack(spacing: 12) {
+                                        Image(systemName: "waveform")
+                                            .font(.system(size: 40))
+                                            .foregroundStyle(Color.textTertiary)
+                                        Text("No Sessions Yet")
+                                            .font(.headline)
+                                            .foregroundStyle(Color.textPrimary)
+                                        Text("Tap the record button to start your first session")
+                                            .font(.subheadline)
+                                            .foregroundStyle(Color.textSecondary)
+                                            .multilineTextAlignment(.center)
+                                    }
+                                    .frame(maxWidth: .infinity)
+                                    .padding(.vertical, 32)
+                                }
+                                .padding(.horizontal)
+                            } else {
+                                VStack(spacing: 12) {
+                                    ForEach(viewModel.recentSessions) { session in
+                                        NavigationLink {
+                                            SessionDetailView(session: session, viewModel: viewModel.sessionsViewModel)
+                                        } label: {
+                                            BrandSessionRow(session: session)
+                                        }
+                                        .buttonStyle(.plain)
+                                    }
+                                }
+                                .padding(.horizontal)
+                            }
                         }
                     }
+                    .padding(.vertical)
+                    .padding(.bottom, 80) // Space for tab bar
                 }
-                .padding(.vertical)
             }
-            .navigationTitle("Dashboard")
+            .navigationTitle("")
+            .navigationBarHidden(true)
             .refreshable {
                 await viewModel.refresh()
             }
@@ -103,95 +131,105 @@ struct DashboardView: View {
     }
 }
 
-struct StatCard: View {
+// MARK: - Brand Stat Card
+
+struct BrandStatCard: View {
     let title: String
     let value: String
-    let subtitle: String
     let icon: String
-    let color: Color
+    let iconColor: Color
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack {
-                Image(systemName: icon)
-                    .foregroundStyle(color)
-                Spacer()
-            }
+        BrandCard {
+            VStack(alignment: .leading, spacing: 12) {
+                HStack {
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 8)
+                            .fill(iconColor.opacity(0.15))
+                            .frame(width: 40, height: 40)
+                        Image(systemName: icon)
+                            .font(.system(size: 18))
+                            .foregroundStyle(iconColor)
+                    }
+                    Spacer()
+                }
 
-            Text(value)
-                .font(.title)
-                .fontWeight(.bold)
+                Text(value)
+                    .font(.title)
+                    .fontWeight(.bold)
+                    .foregroundStyle(Color.textPrimary)
 
-            VStack(alignment: .leading, spacing: 2) {
                 Text(title)
                     .font(.caption)
-                    .foregroundStyle(.secondary)
-                Text(subtitle)
-                    .font(.caption2)
-                    .foregroundStyle(.tertiary)
+                    .foregroundStyle(Color.textSecondary)
             }
         }
-        .padding()
-        .background(Color(.systemGray6))
-        .clipShape(RoundedRectangle(cornerRadius: 12))
     }
 }
 
-struct SessionRow: View {
+// MARK: - Brand Session Row
+
+struct BrandSessionRow: View {
     let session: Session
 
     var body: some View {
-        HStack(spacing: 12) {
-            // Status Indicator
-            Circle()
-                .fill(statusColor)
-                .frame(width: 10, height: 10)
+        BrandCard(padding: 12) {
+            HStack(spacing: 12) {
+                // Avatar
+                if let attendant = session.attendant {
+                    GradientAvatar(name: attendant.name, size: 40)
+                } else {
+                    GradientAvatar(name: "?", size: 40)
+                }
 
-            VStack(alignment: .leading, spacing: 4) {
-                Text(session.displayTitle)
-                    .font(.subheadline)
-                    .fontWeight(.medium)
-                    .lineLimit(1)
+                // Info
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(session.displayTitle)
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                        .foregroundStyle(Color.textPrimary)
+                        .lineLimit(1)
 
-                HStack(spacing: 8) {
-                    if let attendant = session.attendant {
-                        Text(attendant.name)
+                    HStack(spacing: 8) {
+                        if let attendant = session.attendant {
+                            Text(attendant.name)
+                                .font(.caption)
+                                .foregroundStyle(Color.textSecondary)
+                        }
+                        Text(session.formattedDuration)
                             .font(.caption)
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(Color.textSecondary)
                     }
+                }
 
-                    Text(session.formattedDuration)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                Spacer()
+
+                // Status
+                VStack(alignment: .trailing, spacing: 4) {
+                    sessionStatusPill
+                    Text(session.createdAt, style: .relative)
+                        .font(.caption2)
+                        .foregroundStyle(Color.textTertiary)
                 }
             }
-
-            Spacer()
-
-            Text(session.createdAt, style: .relative)
-                .font(.caption)
-                .foregroundStyle(.tertiary)
-
-            Image(systemName: "chevron.right")
-                .font(.caption)
-                .foregroundStyle(.tertiary)
         }
-        .padding()
-        .background(Color(.systemGray6))
-        .clipShape(RoundedRectangle(cornerRadius: 10))
     }
 
-    private var statusColor: Color {
-        switch session.sessionStatus {
-        case .ready:
-            return session.recap?.status == .sent ? .green : .blue
-        case .transcribing:
-            return .orange
-        case .error:
-            return .red
-        default:
-            return .gray
-        }
+    @ViewBuilder
+    private var sessionStatusPill: some View {
+        let status: StatusPill.Status = {
+            switch session.sessionStatus {
+            case .ready:
+                return session.recap?.status == .sent ? .sent : .ready
+            case .transcribing:
+                return .pending
+            case .error:
+                return .error
+            default:
+                return .draft
+            }
+        }()
+        StatusPill(status: status)
     }
 }
 

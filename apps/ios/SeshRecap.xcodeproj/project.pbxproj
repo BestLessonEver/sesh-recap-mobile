@@ -38,6 +38,7 @@
 		E0A385996CB2DF533963D653 /* SubscriptionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2565458E303C8F138B5EEA8 /* SubscriptionView.swift */; };
 		E943E88982E1D70658AB4B6E /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1CF4D83EFC9D47434DF3F1B /* AppDelegate.swift */; };
 		EB002105653DC98F972D0BBF /* Recap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 182ABF6FE2C44B00F544C8CB /* Recap.swift */; };
+		EC4C02ACA4685E31B3CA8090 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E6E527A1277B0091714B7EF /* Theme.swift */; };
 		F1709DD4A038125F6A9D1491 /* SubscriptionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9FC5BE735E7970E060CD8EB /* SubscriptionService.swift */; };
 		F87F30336FF6E39AEC4CCF32 /* RecapEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CE56FBBDAC0FED4C60FA786 /* RecapEditorView.swift */; };
 		FC7DEFB53D249AF54966448D /* SupabaseClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 663896D307B30A12D321AB44 /* SupabaseClient.swift */; };
@@ -65,6 +66,7 @@
 		8CC484EBBB73AF5512F118AE /* Environment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Environment.swift; sourceTree = "<group>"; };
 		8F7F24A2164D6FA1176F39EA /* TeamView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TeamView.swift; sourceTree = "<group>"; };
 		9CE56FBBDAC0FED4C60FA786 /* RecapEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecapEditorView.swift; sourceTree = "<group>"; };
+		9E6E527A1277B0091714B7EF /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		A35F4F0059C68CE89C86BD25 /* Session.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Session.swift; sourceTree = "<group>"; };
 		AFB3BE175BF8E0712A866D04 /* RecordingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingService.swift; sourceTree = "<group>"; };
 		B1CF4D83EFC9D47434DF3F1B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -114,6 +116,7 @@
 			children = (
 				8CC484EBBB73AF5512F118AE /* Environment.swift */,
 				3A046754D1990BF4B2CF1FEB /* Secrets.xcconfig */,
+				9E6E527A1277B0091714B7EF /* Theme.swift */,
 			);
 			path = Config;
 			sourceTree = "<group>";
@@ -365,6 +368,7 @@
 				E0A385996CB2DF533963D653 /* SubscriptionView.swift in Sources */,
 				FC7DEFB53D249AF54966448D /* SupabaseClient.swift in Sources */,
 				6C66A7CF67159A1264B0E1F2 /* TeamView.swift in Sources */,
+				EC4C02ACA4685E31B3CA8090 /* Theme.swift in Sources */,
 				488EC7E58C01D0C81D8C0691 /* WelcomeView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

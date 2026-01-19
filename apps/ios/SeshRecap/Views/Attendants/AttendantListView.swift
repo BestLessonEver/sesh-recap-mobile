@@ -16,28 +16,57 @@ struct AttendantListView: View {
 
     var body: some View {
         NavigationStack {
-            Group {
+            ZStack {
+                Color.bgPrimary
+                    .ignoresSafeArea()
+
                 if viewModel.attendants.isEmpty && !viewModel.isLoading {
-                    ContentUnavailableView(
-                        "No Attendants",
-                        systemImage: "person.2",
-                        description: Text("Add your first attendant to get started")
-                    )
+                    VStack(spacing: 16) {
+                        Image(systemName: "person.2")
+                            .font(.system(size: 50))
+                            .foregroundStyle(Color.textTertiary)
+                        Text("No Attendants")
+                            .font(.title2)
+                            .fontWeight(.bold)
+                            .foregroundStyle(Color.textPrimary)
+                        Text("Add your first attendant to get started")
+                            .font(.subheadline)
+                            .foregroundStyle(Color.textSecondary)
+
+                        Button {
+                            showAddAttendant = true
+                        } label: {
+                            Text("Add Attendant")
+                                .fontWeight(.semibold)
+                                .padding(.horizontal, 24)
+                                .padding(.vertical, 12)
+                                .background(LinearGradient.brandGradient)
+                                .foregroundStyle(.white)
+                                .clipShape(RoundedRectangle(cornerRadius: 10))
+                        }
+                        .padding(.top, 8)
+                    }
                 } else {
-                    List {
-                        ForEach(filteredAttendants) { attendant in
-                            NavigationLink {
-                                AttendantDetailView(attendant: attendant, viewModel: viewModel)
-                            } label: {
-                                AttendantRow(attendant: attendant)
+                    ScrollView {
+                        LazyVStack(spacing: 12) {
+                            ForEach(filteredAttendants) { attendant in
+                                NavigationLink {
+                                    AttendantDetailView(attendant: attendant, viewModel: viewModel)
+                                } label: {
+                                    BrandAttendantRow(attendant: attendant)
+                                }
+                                .buttonStyle(.plain)
                             }
                         }
-                        .onDelete(perform: archiveAttendants)
+                        .padding()
+                        .padding(.bottom, 80)
                     }
-                    .listStyle(.plain)
                 }
             }
             .navigationTitle("Attendants")
+            .navigationBarTitleDisplayMode(.large)
+            .toolbarBackground(Color.bgPrimary, for: .navigationBar)
+            .toolbarColorScheme(.dark, for: .navigationBar)
             .searchable(text: $searchText, prompt: "Search attendants")
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
@@ -53,7 +82,8 @@ struct AttendantListView: View {
                             Label("Archived", systemImage: showArchived ? "checkmark" : "")
                         }
                     } label: {
-                        Label("Filter", systemImage: "line.3.horizontal.decrease.circle")
+                        Image(systemName: "line.3.horizontal.decrease.circle")
+                            .foregroundStyle(Color.textSecondary)
                     }
                 }
 
@@ -62,6 +92,7 @@ struct AttendantListView: View {
                         showAddAttendant = true
                     } label: {
                         Image(systemName: "plus")
+                            .foregroundStyle(Color.brandPink)
                     }
                 }
             }
@@ -76,55 +107,47 @@ struct AttendantListView: View {
             }
         }
     }
-
-    private func archiveAttendants(at offsets: IndexSet) {
-        Task {
-            for index in offsets {
-                let attendant = filteredAttendants[index]
-                try? await viewModel.archiveAttendant(attendant.id)
-            }
-        }
-    }
 }
 
-struct AttendantRow: View {
+struct BrandAttendantRow: View {
     let attendant: Attendant
 
     var body: some View {
-        HStack(spacing: 12) {
-            // Avatar
-            Circle()
-                .fill(Color(.systemGray4))
-                .frame(width: 44, height: 44)
-                .overlay {
-                    Text(attendant.name.prefix(1).uppercased())
-                        .font(.headline)
-                        .foregroundStyle(.secondary)
+        BrandCard(padding: 16) {
+            HStack(spacing: 12) {
+                // Avatar
+                GradientAvatar(name: attendant.name, size: 48)
+
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(attendant.name)
+                        .font(.body)
+                        .fontWeight(.medium)
+                        .foregroundStyle(Color.textPrimary)
+
+                    if let email = attendant.displayEmail {
+                        Text(email)
+                            .font(.caption)
+                            .foregroundStyle(Color.textSecondary)
+                    }
                 }
 
-            VStack(alignment: .leading, spacing: 4) {
-                Text(attendant.name)
-                    .font(.body)
+                Spacer()
 
-                if let email = attendant.displayEmail {
-                    Text(email)
+                if let tags = attendant.tags, !tags.isEmpty {
+                    Text(tags.first!)
                         .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 5)
+                        .background(Color.brandPink.opacity(0.15))
+                        .foregroundStyle(Color.brandPink)
+                        .clipShape(Capsule())
                 }
-            }
 
-            Spacer()
-
-            if let tags = attendant.tags, !tags.isEmpty {
-                Text(tags.first!)
+                Image(systemName: "chevron.right")
                     .font(.caption)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
-                    .background(Color(.systemGray5))
-                    .clipShape(Capsule())
+                    .foregroundStyle(Color.textTertiary)
             }
         }
-        .padding(.vertical, 4)
     }
 }
 
