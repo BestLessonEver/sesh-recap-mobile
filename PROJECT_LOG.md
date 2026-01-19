@@ -12,12 +12,14 @@ iOS-first app for session-based professionals (tutors, coaches, therapists) to r
 - **Billing**: RevenueCat (iOS), Stripe (web)
 
 ## Key Decisions
+- **2026-01-19**: Created Theme.swift design system for iOS — Centralized brand colors, gradients, and reusable components (BrandCard, GradientAvatar, StatusPill, HeroSection) to match web app styling
 - **2025-01-19**: Restructured web app pages into `(dashboard)` route group — Shared layout with sidebar/mobile nav, auth check happens once in layout
 - **2025-01-18**: Used Supabase instead of custom backend — All-in-one solution with auto-scaling, native iOS SDK, built-in Apple Sign-In support
 - **2025-01-18**: Chose "attendant" terminology over "student" — More generic for coaches, therapists, consultants beyond just tutoring
 - **2025-01-18**: Private storage bucket for audio files — Security; access via signed URLs only
 
 ## Mistakes & Lessons
+- **2026-01-19**: New Swift files not appearing in Xcode → Project uses xcodegen; must run `xcodegen generate` after adding new files to regenerate project.pbxproj
 - **2026-01-19**: xcconfig files with URLs fail silently - `//` in URLs is treated as comment → Hardcode credentials directly in `AppConfig.swift` for development. For production, use a different approach (e.g., plist without xcconfig, or CI injection).
 - **2026-01-19**: xcodegen `configFiles:` doesn't reliably pass values to Info.plist → Even with proper xcconfig setup, `Bundle.main.object(forInfoDictionaryKey:)` returns nil. Hardcode values in Swift code as workaround.
 - **2026-01-19**: Supabase Swift SDK v2 has type naming conflicts → Rename wrapper class from `SupabaseClient` to `Database` to avoid conflict with SDK's `SupabaseClient`. Use `Auth.Session` typealias for auth sessions to avoid conflict with our `Session` model.
@@ -42,9 +44,10 @@ iOS-first app for session-based professionals (tutors, coaches, therapists) to r
 - Theme toggle (dark/light mode with localStorage persistence)
 - iOS Xcode project builds successfully on simulator
 - iOS Swift packages configured (supabase-swift v2, RevenueCat)
+- **iOS app branded design matching web app** (Theme.swift design system)
+- iOS views styled: WelcomeView, SignInView, DashboardView, MainTabView, SessionListView, AttendantListView, SettingsView
 
 **In Progress:**
-- iOS app runtime testing in simulator
 - Stripe/RevenueCat integration pending
 
 **Blocked:**
@@ -70,6 +73,12 @@ iOS-first app for session-based professionals (tutors, coaches, therapists) to r
 
 ## Changelog
 ### 2026-01-19
+- Updated iOS app with branded design matching web app (`a01bedf`)
+- Created `Config/Theme.swift` with brand colors (pink #FF69B4, gold #FFD700), gradients, and reusable components
+- Added components: BrandCard, GradientAvatar, StatusPill, HeroSection, BrandText, GradientBlob
+- Styled all main views: WelcomeView, SignInView, DashboardView, MainTabView, SessionListView, AttendantListView, SettingsView
+- Custom tab bar with elevated red record button and pink active state
+- Dark mode default (#030712 background) with gradient cards
 - Fixed iOS Swift/Supabase SDK v2 compatibility issues (`a0b588a`)
 - Renamed wrapper class from `SupabaseClient` to `Database` to avoid SDK naming conflict
 - Renamed `Environment` enum to `AppConfig` to avoid SwiftUI `@Environment` conflict
