@@ -18,6 +18,8 @@ iOS-first app for session-based professionals (tutors, coaches, therapists) to r
 - **2025-01-18**: Private storage bucket for audio files — Security; access via signed URLs only
 
 ## Mistakes & Lessons
+- **2026-01-19**: xcconfig files with URLs fail silently - `//` in URLs is treated as comment → Hardcode credentials directly in `AppConfig.swift` for development. For production, use a different approach (e.g., plist without xcconfig, or CI injection).
+- **2026-01-19**: xcodegen `configFiles:` doesn't reliably pass values to Info.plist → Even with proper xcconfig setup, `Bundle.main.object(forInfoDictionaryKey:)` returns nil. Hardcode values in Swift code as workaround.
 - **2026-01-19**: Supabase Swift SDK v2 has type naming conflicts → Rename wrapper class from `SupabaseClient` to `Database` to avoid conflict with SDK's `SupabaseClient`. Use `Auth.Session` typealias for auth sessions to avoid conflict with our `Session` model.
 - **2026-01-19**: SwiftUI `@Environment` conflicts with custom `Environment` enum → Rename config enum to `AppConfig` to avoid shadowing SwiftUI's property wrapper.
 - **2026-01-19**: Supabase Swift SDK requires Encodable types for insert/update → Cannot use `[String: Any]` dictionaries. Create dedicated `InsertXxxRequest` structs that are Codable.
@@ -53,7 +55,7 @@ iOS-first app for session-based professionals (tutors, coaches, therapists) to r
 - **Project URL**: `https://lkwxiocbnfpqglxqmsbj.supabase.co`
 - **Project ID**: `lkwxiocbnfpqglxqmsbj`
 - **Config Files**:
-  - iOS: `apps/ios/SeshRecap/Config/Secrets.xcconfig`
+  - iOS: Hardcoded in `apps/ios/SeshRecap/Config/Environment.swift` (xcconfig approach failed)
   - Web: `apps/web/.env.local`
 
 ## Database Tables
@@ -77,6 +79,9 @@ iOS-first app for session-based professionals (tutors, coaches, therapists) to r
 - Added `await` for @MainActor isolated `Database.shared` access
 - Fixed Storage API calls to use new method signatures (`upload(_:data:options:)`)
 - iOS app now builds successfully on iPhone 17 Pro Simulator
+- Fixed runtime crash: xcconfig files don't work with URLs containing `//` (treated as comments)
+- Hardcoded Supabase credentials directly in `AppConfig.swift` as workaround
+- Added Info.plist keys for SUPABASE_URL, SUPABASE_ANON_KEY, REVENUECAT_API_KEY (for future xcconfig use)
 
 ### 2025-01-19
 - Restored dark theme design from lesson-bot to web app

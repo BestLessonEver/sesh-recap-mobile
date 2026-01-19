@@ -31,6 +31,9 @@ targets:
       - path: SeshRecap
         excludes:
           - "**/.DS_Store"
+    configFiles:
+      Debug: SeshRecap/Config/Secrets.xcconfig
+      Release: SeshRecap/Config/Secrets.xcconfig
     settings:
       base:
         INFOPLIST_FILE: SeshRecap/Info.plist
@@ -39,7 +42,6 @@ targets:
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
         ENABLE_PREVIEWS: YES
         LD_RUNPATH_SEARCH_PATHS: $(inherited) @executable_path/Frameworks
-        XCCONFIG_FILE: $(SRCROOT)/SeshRecap/Config/Secrets.xcconfig
     dependencies:
       - package: supabase-swift
         product: Supabase

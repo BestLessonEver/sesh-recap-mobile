@@ -2,28 +2,13 @@ import Foundation
 
 enum AppConfig {
     // MARK: - Supabase
-    static let supabaseURL: URL = {
-        guard let urlString = Bundle.main.object(forInfoDictionaryKey: "SUPABASE_URL") as? String,
-              let url = URL(string: urlString) else {
-            fatalError("SUPABASE_URL not configured")
-        }
-        return url
-    }()
+    // TODO: Move to secure storage for production
+    static let supabaseURL: URL = URL(string: "https://lkwxiocbnfpqglxqmsbj.supabase.co")!
 
-    static let supabaseAnonKey: String = {
-        guard let key = Bundle.main.object(forInfoDictionaryKey: "SUPABASE_ANON_KEY") as? String else {
-            fatalError("SUPABASE_ANON_KEY not configured")
-        }
-        return key
-    }()
+    static let supabaseAnonKey: String = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxrd3hpb2NibmZwcWdseHFtc2JqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg3ODY4NjksImV4cCI6MjA4NDM2Mjg2OX0.rfW1zKLMayMcjkMFhahCc58o_r7mdkdwYsvcEG_hYZg"
 
     // MARK: - RevenueCat
-    static let revenueCatAPIKey: String = {
-        guard let key = Bundle.main.object(forInfoDictionaryKey: "REVENUECAT_API_KEY") as? String else {
-            fatalError("REVENUECAT_API_KEY not configured")
-        }
-        return key
-    }()
+    static let revenueCatAPIKey: String = "placeholder_key"
 
     // MARK: - App Info
     static let appVersion: String = {

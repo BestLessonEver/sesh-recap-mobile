@@ -374,6 +374,7 @@
 /* Begin XCBuildConfiguration section */
 		0B597AE859FFFB2B8F3EF98F /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 3A046754D1990BF4B2CF1FEB /* Secrets.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -384,7 +385,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.seshrecap.app;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				XCCONFIG_FILE = "$(SRCROOT)/SeshRecap/Config/Secrets.xcconfig";
 			};
 			name = Debug;
 		};
@@ -457,6 +457,7 @@
 		};
 		8FFF7E6D5B8A4F0E66CB9EC6 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 3A046754D1990BF4B2CF1FEB /* Secrets.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -467,7 +468,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.seshrecap.app;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				XCCONFIG_FILE = "$(SRCROOT)/SeshRecap/Config/Secrets.xcconfig";
 			};
 			name = Release;
 		};
