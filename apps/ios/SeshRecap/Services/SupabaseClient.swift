@@ -43,19 +43,33 @@ class Database {
     // MARK: - Functions
 
     func invoke(_ functionName: String, body: some Encodable) async throws {
-        // Ensure auth token is set before invoking (workaround for SDK auth header issue)
-        if let accessToken = try? await client.auth.session.accessToken {
-            client.functions.setAuth(token: accessToken)
+        // Get auth token - throw if not available
+        guard let session = try? await client.auth.session else {
+            throw DatabaseError.notAuthenticated
         }
+        client.functions.setAuth(token: session.accessToken)
         try await client.functions.invoke(functionName, options: .init(body: body))
     }
 
     func invoke<T: Decodable>(_ functionName: String, body: some Encodable) async throws -> T {
-        // Ensure auth token is set before invoking (workaround for SDK auth header issue)
-        if let accessToken = try? await client.auth.session.accessToken {
-            client.functions.setAuth(token: accessToken)
+        // Get auth token - throw if not available
+        guard let session = try? await client.auth.session else {
+            throw DatabaseError.notAuthenticated
         }
+        client.functions.setAuth(token: session.accessToken)
         return try await client.functions.invoke(functionName, options: .init(body: body))
+    }
+}
+
+// MARK: - Errors
+enum DatabaseError: LocalizedError {
+    case notAuthenticated
+
+    var errorDescription: String? {
+        switch self {
+        case .notAuthenticated:
+            return "Not authenticated. Please sign in again."
+        }
     }
 }
 

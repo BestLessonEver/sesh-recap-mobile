@@ -120,6 +120,8 @@ class RecordingService: NSObject, ObservableObject {
             self.audioLevel = 0
         }
 
+        isAudioSessionPrepared = false
+
         let chunks = uploadedChunks
         currentSessionId = nil
         uploadedChunks = []
@@ -138,6 +140,7 @@ class RecordingService: NSObject, ObservableObject {
         duration = 0
         currentSessionId = nil
         uploadedChunks = []
+        isAudioSessionPrepared = false
     }
 
     // MARK: - Audio Session Configuration
@@ -145,6 +148,8 @@ class RecordingService: NSObject, ObservableObject {
     private func configureAudioSession() async throws {
         try audioSession.setCategory(.playAndRecord, mode: .default, options: [.defaultToSpeaker])
         try audioSession.setActive(true)
+        // Give audio hardware time to fully initialize
+        try await Task.sleep(nanoseconds: 50_000_000)  // 50ms
     }
 
     // MARK: - Chunk Management

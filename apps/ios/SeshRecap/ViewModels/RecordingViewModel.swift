@@ -48,8 +48,8 @@ class RecordingViewModel: ObservableObject {
     func startRecording() async {
         guard !isRecording else { return }
 
-        // Pre-warm audio session while other async ops happen
-        Task { await recordingService.prepareAudioSession() }
+        // Pre-warm audio session FIRST (await it!)
+        await recordingService.prepareAudioSession()
 
         if !checkMicrophonePermission() {
             let granted = await requestMicrophonePermission()
