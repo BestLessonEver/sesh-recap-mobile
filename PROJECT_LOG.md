@@ -19,6 +19,7 @@ iOS-first app for session-based professionals (tutors, coaches, therapists) to r
 - **2025-01-18**: Private storage bucket for audio files — Security; access via signed URLs only
 
 ## Mistakes & Lessons
+- **2026-01-19**: RLS error "new row violates row-level security policy" on record button → The DB trigger `handle_new_user()` may fail silently, leaving no `professionals` row for the user. Add defensive `ensureProfessionalExists()` check before inserting sessions.
 - **2026-01-19**: Schema misunderstanding about professionals table → `professionals.id` IS the `auth.users.id` (same UUID via foreign key: `id UUID PRIMARY KEY REFERENCES auth.users(id)`). There is NO separate `user_id` column. Use `auth.uid()` / `Database.shared.currentUserId` directly as `professional_id`.
 - **2026-01-19**: New Swift files not appearing in Xcode → Project uses xcodegen; must run `xcodegen generate` after adding new files to regenerate project.pbxproj
 - **2026-01-19**: xcconfig files with URLs fail silently - `//` in URLs is treated as comment → Hardcode credentials directly in `AppConfig.swift` for development. For production, use a different approach (e.g., plist without xcconfig, or CI injection).
@@ -76,6 +77,7 @@ iOS-first app for session-based professionals (tutors, coaches, therapists) to r
 
 ## Changelog
 ### 2026-01-19
+- Fixed RLS error on record button (`4923f5b`) - Added `ensureProfessionalExists()` in SessionsViewModel to create professionals row if DB trigger failed
 - Reverted incorrect user_id fix (`3460805`) - professionals.id IS auth.users.id
 - Added light/dark mode toggle in Settings (`c967506`)
   - Created `AppearanceManager` with Light/Dark/System options
