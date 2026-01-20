@@ -1,5 +1,6 @@
 import Foundation
 import Supabase
+import Auth
 
 @MainActor
 class Database {
@@ -12,7 +13,7 @@ class Database {
             supabaseURL: AppConfig.supabaseURL,
             supabaseKey: AppConfig.supabaseAnonKey,
             options: SupabaseClientOptions(
-                auth: SupabaseClientOptions.AuthOptions(
+                auth: AuthClient.Configuration(
                     emitLocalSessionAsInitialSession: true
                 )
             )
