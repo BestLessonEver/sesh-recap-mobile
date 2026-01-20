@@ -33,6 +33,7 @@ struct WelcomeView: View {
                                 .font(.system(size: 44, weight: .medium))
                                 .foregroundStyle(Color.bgPrimary)
                         }
+                        .accessibilityHidden(true)
 
                         VStack(spacing: 8) {
                             BrandText(text: "Sesh.Rec", font: .largeTitle)
@@ -95,8 +96,11 @@ struct WelcomeView: View {
                         .ignoresSafeArea()
                     ProgressView()
                         .tint(.white)
+                        .accessibilityLabel("Signing in")
                 }
             }
+            .accessibilityElement(children: .contain)
+            .accessibilityAddTraits(authViewModel.isLoading ? .updatesFrequently : [])
             .alert("Error", isPresented: .constant(authViewModel.error != nil)) {
                 Button("OK") {
                     authViewModel.error = nil

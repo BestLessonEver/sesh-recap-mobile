@@ -100,27 +100,10 @@ extension Color {
     }
 }
 
-// MARK: - UIColor Extension for hex
+// MARK: - UIColor Extension for hex (uses shared parsing from Color extension)
 extension UIColor {
     convenience init(hex: String) {
-        let hex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
-        var int: UInt64 = 0
-        Scanner(string: hex).scanHexInt64(&int)
-        let a, r, g, b: UInt64
-        switch hex.count {
-        case 6: // RGB (24-bit)
-            (a, r, g, b) = (255, int >> 16, int >> 8 & 0xFF, int & 0xFF)
-        case 8: // ARGB (32-bit)
-            (a, r, g, b) = (int >> 24, int >> 16 & 0xFF, int >> 8 & 0xFF, int & 0xFF)
-        default:
-            (a, r, g, b) = (255, 0, 0, 0)
-        }
-        self.init(
-            red: CGFloat(r) / 255,
-            green: CGFloat(g) / 255,
-            blue: CGFloat(b) / 255,
-            alpha: CGFloat(a) / 255
-        )
+        self.init(Color(hex: hex))
     }
 }
 
@@ -361,8 +344,96 @@ struct BrandBackgroundModifier: ViewModifier {
     }
 }
 
+struct LoadingOverlayModifier: ViewModifier {
+    let isLoading: Bool
+    var message: String? = nil
+
+    func body(content: Content) -> some View {
+        content.overlay {
+            if isLoading {
+                Color.black.opacity(0.5)
+                    .ignoresSafeArea()
+                VStack(spacing: 16) {
+                    ProgressView()
+                        .tint(.white)
+                    if let message = message {
+                        Text(message)
+                            .foregroundStyle(.white)
+                    }
+                }
+            }
+        }
+    }
+}
+
+struct ErrorAlertModifier: ViewModifier {
+    @Binding var error: Error?
+
+    func body(content: Content) -> some View {
+        content.alert("Error", isPresented: .constant(error != nil)) {
+            Button("OK") {
+                error = nil
+            }
+        } message: {
+            Text(error?.localizedDescription ?? "An error occurred")
+        }
+    }
+}
+
 extension View {
     func brandBackground() -> some View {
         modifier(BrandBackgroundModifier())
+    }
+
+    func loadingOverlay(isLoading: Bool, message: String? = nil) -> some View {
+        modifier(LoadingOverlayModifier(isLoading: isLoading, message: message))
+    }
+
+    func errorAlert(error: Binding<Error?>) -> some View {
+        modifier(ErrorAlertModifier(error: error))
+    }
+}
+
+// MARK: - Reusable Form Fields
+
+struct BrandTextField: View {
+    let placeholder: String
+    @Binding var text: String
+    var contentType: UITextContentType?
+    var keyboardType: UIKeyboardType = .default
+    var capitalization: TextInputAutocapitalization = .sentences
+
+    var body: some View {
+        TextField(placeholder, text: $text)
+            .textContentType(contentType)
+            .keyboardType(keyboardType)
+            .textInputAutocapitalization(capitalization)
+            .padding()
+            .background(Color.bgCard)
+            .foregroundStyle(Color.textPrimary)
+            .clipShape(RoundedRectangle(cornerRadius: 10))
+            .overlay(
+                RoundedRectangle(cornerRadius: 10)
+                    .stroke(Color.border, lineWidth: 1)
+            )
+    }
+}
+
+struct BrandSecureField: View {
+    let placeholder: String
+    @Binding var text: String
+    var contentType: UITextContentType?
+
+    var body: some View {
+        SecureField(placeholder, text: $text)
+            .textContentType(contentType)
+            .padding()
+            .background(Color.bgCard)
+            .foregroundStyle(Color.textPrimary)
+            .clipShape(RoundedRectangle(cornerRadius: 10))
+            .overlay(
+                RoundedRectangle(cornerRadius: 10)
+                    .stroke(Color.border, lineWidth: 1)
+            )
     }
 }

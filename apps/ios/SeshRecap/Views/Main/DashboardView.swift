@@ -88,6 +88,7 @@ struct DashboardView: View {
                                         Image(systemName: "waveform")
                                             .font(.system(size: 40))
                                             .foregroundStyle(Color.textTertiary)
+                                            .accessibilityHidden(true)
                                         Text("No Sessions Yet")
                                             .font(.headline)
                                             .foregroundStyle(Color.textPrimary)
@@ -151,6 +152,7 @@ struct BrandStatCard: View {
                             .font(.system(size: 18))
                             .foregroundStyle(iconColor)
                     }
+                    .accessibilityHidden(true)
                     Spacer()
                 }
 
@@ -164,6 +166,8 @@ struct BrandStatCard: View {
                     .foregroundStyle(Color.textSecondary)
             }
         }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(title): \(value)")
     }
 }
 

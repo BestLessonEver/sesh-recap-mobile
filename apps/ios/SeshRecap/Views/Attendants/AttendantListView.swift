@@ -25,6 +25,7 @@ struct AttendantListView: View {
                         Image(systemName: "person.2")
                             .font(.system(size: 50))
                             .foregroundStyle(Color.textTertiary)
+                            .accessibilityHidden(true)
                         Text("No Attendants")
                             .font(.title2)
                             .fontWeight(.bold)
@@ -85,6 +86,8 @@ struct AttendantListView: View {
                         Image(systemName: "line.3.horizontal.decrease.circle")
                             .foregroundStyle(Color.textSecondary)
                     }
+                    .accessibilityLabel("Filter attendants")
+                    .accessibilityHint("Shows \(showArchived ? "archived" : "active") attendants")
                 }
 
                 ToolbarItem(placement: .topBarTrailing) {
@@ -94,6 +97,7 @@ struct AttendantListView: View {
                         Image(systemName: "plus")
                             .foregroundStyle(Color.brandPink)
                     }
+                    .accessibilityLabel("Add attendant")
                 }
             }
             .refreshable {
@@ -117,6 +121,7 @@ struct BrandAttendantRow: View {
             HStack(spacing: 12) {
                 // Avatar
                 GradientAvatar(name: attendant.name, size: 48)
+                    .accessibilityHidden(true)
 
                 VStack(alignment: .leading, spacing: 4) {
                     Text(attendant.name)
@@ -146,8 +151,22 @@ struct BrandAttendantRow: View {
                 Image(systemName: "chevron.right")
                     .font(.caption)
                     .foregroundStyle(Color.textTertiary)
+                    .accessibilityHidden(true)
             }
         }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(accessibilityDescription)
+    }
+
+    private var accessibilityDescription: String {
+        var description = attendant.name
+        if let email = attendant.displayEmail {
+            description += ", \(email)"
+        }
+        if let tags = attendant.tags, let firstTag = tags.first {
+            description += ", tagged as \(firstTag)"
+        }
+        return description
     }
 }
 

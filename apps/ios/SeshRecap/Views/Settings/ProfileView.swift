@@ -45,12 +45,24 @@ struct ProfileView: View {
                 VStack {
                     Spacer()
                     Text("Profile saved")
+                        .foregroundStyle(Color.textPrimary)
                         .padding()
-                        .background(.regularMaterial)
+                        .background(Color.bgCard)
                         .clipShape(Capsule())
+                        .overlay(
+                            Capsule()
+                                .stroke(Color.border, lineWidth: 1)
+                        )
+                        .shadow(color: .black.opacity(0.2), radius: 8, y: 4)
                         .padding(.bottom, 50)
+                        .accessibilityAddTraits(.isStaticText)
                 }
                 .transition(.move(edge: .bottom).combined(with: .opacity))
+            }
+        }
+        .onChange(of: showSuccess) { _, newValue in
+            if newValue {
+                UIAccessibility.post(notification: .announcement, argument: "Profile saved successfully")
             }
         }
     }

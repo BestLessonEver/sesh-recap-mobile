@@ -263,3 +263,13 @@ export type InsertTables<T extends keyof Database['public']['Tables']> =
   Database['public']['Tables'][T]['Insert']
 export type UpdateTables<T extends keyof Database['public']['Tables']> =
   Database['public']['Tables'][T]['Update']
+
+// Shared composite types used across the app
+export type ProfessionalWithOrg = Tables<'professionals'> & {
+  organization: Tables<'organizations'> | null
+}
+
+export type SessionWithRelations = Tables<'sessions'> & {
+  attendant: Tables<'attendants'> | null
+  recap: Tables<'recaps'> | null
+}

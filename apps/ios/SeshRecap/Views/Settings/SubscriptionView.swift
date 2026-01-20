@@ -63,28 +63,36 @@ struct SubscriptionView: View {
         VStack(spacing: 12) {
             Image(systemName: subscriptionService.isProActive ? "crown.fill" : "crown")
                 .font(.system(size: 40))
-                .foregroundStyle(subscriptionService.isProActive ? .yellow : .gray)
+                .foregroundStyle(subscriptionService.isProActive ? Color.brandGold : Color.textTertiary)
+                .accessibilityHidden(true)
 
             Text(subscriptionService.isProActive ? "Pro" : "Free")
                 .font(.title)
                 .fontWeight(.bold)
+                .foregroundStyle(Color.textPrimary)
 
             if subscriptionService.isProActive {
                 if let expirationDate = subscriptionService.customerInfo?.entitlements["pro"]?.expirationDate {
                     Text("Renews \(expirationDate, style: .date)")
                         .font(.subheadline)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(Color.textSecondary)
                 }
             } else {
                 Text("Limited features")
                     .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Color.textSecondary)
             }
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 24)
-        .background(Color(.systemGray6))
+        .background(Color.bgCard)
         .clipShape(RoundedRectangle(cornerRadius: 16))
+        .overlay(
+            RoundedRectangle(cornerRadius: 16)
+                .stroke(Color.border, lineWidth: 1)
+        )
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("Current plan: \(subscriptionService.isProActive ? "Pro" : "Free")")
     }
 
     private var availablePackages: [Package] {
@@ -102,6 +110,7 @@ struct SubscriptionView: View {
         VStack(alignment: .leading, spacing: 16) {
             Text("What's included")
                 .font(.headline)
+                .foregroundStyle(Color.textPrimary)
 
             FeatureRow(icon: "waveform", title: "Unlimited recordings", included: true)
             FeatureRow(icon: "sparkles", title: "AI-powered recaps", included: true)
@@ -147,9 +156,11 @@ struct PackageCard: View {
                     VStack(alignment: .leading, spacing: 4) {
                         Text(package.packageType == .annual ? "Annual" : "Monthly")
                             .font(.headline)
+                            .foregroundStyle(Color.textPrimary)
                         Text(package.localizedPriceString)
                             .font(.title2)
                             .fontWeight(.bold)
+                            .foregroundStyle(Color.textPrimary)
                     }
                     Spacer()
                     if package.packageType == .annual {
@@ -158,7 +169,7 @@ struct PackageCard: View {
                             .fontWeight(.semibold)
                             .padding(.horizontal, 8)
                             .padding(.vertical, 4)
-                            .background(.green)
+                            .background(Color.success)
                             .foregroundStyle(.white)
                             .clipShape(Capsule())
                     }
@@ -167,19 +178,23 @@ struct PackageCard: View {
                 if package.packageType == .annual {
                     Text("\(package.localizedPricePerMonth)/month")
                         .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(Color.textSecondary)
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
             }
             .padding()
-            .background(Color(.systemGray6))
+            .background(Color.bgCard)
             .clipShape(RoundedRectangle(cornerRadius: 12))
             .overlay {
                 RoundedRectangle(cornerRadius: 12)
-                    .stroke(isSelected ? Color.blue : Color.clear, lineWidth: 2)
+                    .stroke(isSelected ? Color.brandPink : Color.border, lineWidth: isSelected ? 2 : 1)
             }
         }
         .buttonStyle(.plain)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(package.packageType == .annual ? "Annual" : "Monthly") plan, \(package.localizedPriceString)")
+        .accessibilityHint("Double tap to subscribe")
+        .accessibilityAddTraits(isSelected ? [.isSelected] : [])
     }
 }
 
@@ -192,16 +207,20 @@ struct FeatureRow: View {
         HStack(spacing: 12) {
             Image(systemName: icon)
                 .frame(width: 24)
-                .foregroundStyle(included ? .blue : .gray)
+                .foregroundStyle(included ? Color.brandPink : Color.textTertiary)
+                .accessibilityHidden(true)
 
             Text(title)
-                .foregroundStyle(included ? .primary : .secondary)
+                .foregroundStyle(included ? Color.textPrimary : Color.textSecondary)
 
             Spacer()
 
             Image(systemName: included ? "checkmark.circle.fill" : "circle")
-                .foregroundStyle(included ? .green : .gray)
+                .foregroundStyle(included ? Color.success : Color.textTertiary)
+                .accessibilityHidden(true)
         }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(title), \(included ? "included" : "not included")")
     }
 }
 

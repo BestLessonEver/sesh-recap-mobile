@@ -121,6 +121,7 @@ struct SessionDetailView: View {
         Circle()
             .fill(statusColor)
             .frame(width: 8, height: 8)
+            .accessibilityHidden(true)
     }
 
     private var statusColor: Color {
@@ -187,6 +188,8 @@ struct SessionDetailView: View {
                         Image(systemName: "ellipsis.circle")
                             .foregroundStyle(Color.brandPink)
                     }
+                    .accessibilityLabel("Recap options")
+                    .accessibilityHint("Edit or send this recap")
                 }
             }
 

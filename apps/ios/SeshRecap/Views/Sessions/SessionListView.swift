@@ -2,7 +2,14 @@ import SwiftUI
 
 struct SessionListView: View {
     @ObservedObject var viewModel: SessionsViewModel
+    @Binding var navigateToSessionId: UUID?
     @State private var searchText = ""
+    @State private var navigationPath = NavigationPath()
+
+    init(viewModel: SessionsViewModel, navigateToSessionId: Binding<UUID?> = .constant(nil)) {
+        self.viewModel = viewModel
+        self._navigateToSessionId = navigateToSessionId
+    }
 
     var filteredSessions: [Session] {
         if searchText.isEmpty {
@@ -15,7 +22,7 @@ struct SessionListView: View {
     }
 
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $navigationPath) {
             ZStack {
                 Color.bgPrimary
                     .ignoresSafeArea()
@@ -25,6 +32,7 @@ struct SessionListView: View {
                         Image(systemName: "waveform")
                             .font(.system(size: 50))
                             .foregroundStyle(Color.textTertiary)
+                            .accessibilityHidden(true)
                         Text("No Sessions")
                             .font(.title2)
                             .fontWeight(.bold)
@@ -37,9 +45,7 @@ struct SessionListView: View {
                     ScrollView {
                         LazyVStack(spacing: 12) {
                             ForEach(filteredSessions) { session in
-                                NavigationLink {
-                                    SessionDetailView(session: session, viewModel: viewModel)
-                                } label: {
+                                NavigationLink(value: session) {
                                     BrandSessionListRow(session: session)
                                 }
                                 .buttonStyle(.plain)
@@ -60,6 +66,16 @@ struct SessionListView: View {
             }
             .task {
                 await viewModel.loadSessions()
+            }
+            .navigationDestination(for: Session.self) { session in
+                SessionDetailView(session: session, viewModel: viewModel)
+            }
+            .onChange(of: navigateToSessionId) { _, sessionId in
+                if let sessionId = sessionId,
+                   let session = viewModel.getSession(sessionId) {
+                    navigationPath.append(session)
+                    navigateToSessionId = nil
+                }
             }
         }
     }
@@ -133,6 +149,17 @@ struct BrandSessionListRow: View {
                     .foregroundStyle(statusColor)
             }
         }
+        .accessibilityLabel(statusAccessibilityLabel)
+    }
+
+    private var statusAccessibilityLabel: String {
+        switch session.sessionStatus {
+        case .recording: return "Recording in progress"
+        case .uploading: return "Uploading"
+        case .transcribing: return "Transcribing"
+        case .ready: return "Ready"
+        case .error: return "Error"
+        }
     }
 
     private var statusColor: Color {
@@ -160,5 +187,5 @@ struct BrandSessionListRow: View {
 }
 
 #Preview {
-    SessionListView(viewModel: SessionsViewModel())
+    SessionListView(viewModel: SessionsViewModel(), navigateToSessionId: .constant(nil))
 }

@@ -112,8 +112,11 @@ struct SignInView: View {
                     .ignoresSafeArea()
                 ProgressView()
                     .tint(.white)
+                    .accessibilityLabel(isSignUp ? "Creating account" : "Signing in")
             }
         }
+        .accessibilityElement(children: .contain)
+        .accessibilityAddTraits(authViewModel.isLoading ? .updatesFrequently : [])
         .alert("Error", isPresented: .constant(authViewModel.error != nil)) {
             Button("OK") {
                 authViewModel.error = nil
@@ -128,50 +131,6 @@ struct SignInView: View {
         let passwordValid = password.count >= 8
         let nameValid = !isSignUp || name.count >= 2
         return emailValid && passwordValid && nameValid
-    }
-}
-
-// MARK: - Brand Text Field
-
-struct BrandTextField: View {
-    let placeholder: String
-    @Binding var text: String
-    var contentType: UITextContentType?
-    var keyboardType: UIKeyboardType = .default
-    var capitalization: TextInputAutocapitalization = .sentences
-
-    var body: some View {
-        TextField(placeholder, text: $text)
-            .textContentType(contentType)
-            .keyboardType(keyboardType)
-            .textInputAutocapitalization(capitalization)
-            .padding()
-            .background(Color.bgCard)
-            .foregroundStyle(Color.textPrimary)
-            .clipShape(RoundedRectangle(cornerRadius: 10))
-            .overlay(
-                RoundedRectangle(cornerRadius: 10)
-                    .stroke(Color.border, lineWidth: 1)
-            )
-    }
-}
-
-struct BrandSecureField: View {
-    let placeholder: String
-    @Binding var text: String
-    var contentType: UITextContentType?
-
-    var body: some View {
-        SecureField(placeholder, text: $text)
-            .textContentType(contentType)
-            .padding()
-            .background(Color.bgCard)
-            .foregroundStyle(Color.textPrimary)
-            .clipShape(RoundedRectangle(cornerRadius: 10))
-            .overlay(
-                RoundedRectangle(cornerRadius: 10)
-                    .stroke(Color.border, lineWidth: 1)
-            )
     }
 }
 

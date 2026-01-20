@@ -2,6 +2,7 @@ import Foundation
 import AVFoundation
 import Combine
 
+@MainActor
 class RecordingService: NSObject, ObservableObject {
     static let shared = RecordingService()
 
@@ -162,10 +163,14 @@ class RecordingService: NSObject, ObservableObject {
             AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue
         ]
 
+        print("🎤 Creating recorder at: \(currentRecordingURL)")
         audioRecorder = try AVAudioRecorder(url: currentRecordingURL, settings: settings)
         audioRecorder?.isMeteringEnabled = true
         audioRecorder?.delegate = self
-        audioRecorder?.record()
+
+        let started = audioRecorder?.record() ?? false
+        print("🎤 Recording started: \(started)")
+        print("🎤 Recorder isRecording: \(audioRecorder?.isRecording ?? false)")
     }
 
     private func uploadCurrentChunk() async throws {
@@ -211,11 +216,15 @@ class RecordingService: NSObject, ObservableObject {
 
     private func startTimers() {
         durationTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
-            self?.duration += 1
+            Task { @MainActor in
+                self?.duration += 1
+            }
         }
 
         levelTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
-            self?.updateAudioLevel()
+            Task { @MainActor in
+                self?.updateAudioLevel()
+            }
         }
 
         chunkTimer = Timer.scheduledTimer(
@@ -225,6 +234,9 @@ class RecordingService: NSObject, ObservableObject {
             userInfo: nil,
             repeats: true
         )
+
+        // Fire immediately so audioLevel isn't 0 on first read
+        updateAudioLevel()
     }
 
     private func stopTimers() {
@@ -237,9 +249,20 @@ class RecordingService: NSObject, ObservableObject {
     }
 
     private func updateAudioLevel() {
-        audioRecorder?.updateMeters()
-        let level = audioRecorder?.averagePower(forChannel: 0) ?? -160
-        let normalizedLevel = max(0, (level + 60) / 60)
+        guard let recorder = audioRecorder else {
+            print("⚠️ No audioRecorder!")
+            return
+        }
+
+        recorder.updateMeters()
+        let rawLevel = recorder.averagePower(forChannel: 0)
+        let normalizedLevel = max(0, (rawLevel + 60) / 60)
+
+        // Only log occasionally to avoid spam
+        if Int(Date().timeIntervalSince1970 * 10) % 10 == 0 {
+            print("🔊 Raw: \(rawLevel) dB → Normalized: \(normalizedLevel)")
+        }
+
         audioLevel = normalizedLevel
     }
 
@@ -257,14 +280,18 @@ class RecordingService: NSObject, ObservableObject {
 // MARK: - AVAudioRecorderDelegate
 
 extension RecordingService: AVAudioRecorderDelegate {
-    func audioRecorderDidFinishRecording(_ recorder: AVAudioRecorder, successfully flag: Bool) {
+    nonisolated func audioRecorderDidFinishRecording(_ recorder: AVAudioRecorder, successfully flag: Bool) {
         if !flag {
-            error = .recordingFailed
+            Task { @MainActor in
+                self.error = .recordingFailed
+            }
         }
     }
 
-    func audioRecorderEncodeErrorDidOccur(_ recorder: AVAudioRecorder, error: Error?) {
-        self.error = .encodingFailed(error)
+    nonisolated func audioRecorderEncodeErrorDidOccur(_ recorder: AVAudioRecorder, error: Error?) {
+        Task { @MainActor in
+            self.error = .encodingFailed(error)
+        }
     }
 }
 

@@ -12,6 +12,8 @@ iOS-first app for session-based professionals (tutors, coaches, therapists) to r
 - **Billing**: RevenueCat (iOS), Stripe (web)
 
 ## Key Decisions
+- **2026-01-19**: Disabled JWT verification on edge functions, verify manually with admin client — Supabase Swift SDK has auth header issues; manual verification with `getUser(token)` is more reliable
+- **2026-01-19**: Use raw URLSession for edge function calls instead of SDK — SDK's `functions.invoke()` doesn't reliably pass auth headers even with `setAuth()` and explicit headers
 - **2026-01-19**: Created Theme.swift design system for iOS — Centralized brand colors, gradients, and reusable components (BrandCard, GradientAvatar, StatusPill, HeroSection) to match web app styling
 - **2025-01-19**: Restructured web app pages into `(dashboard)` route group — Shared layout with sidebar/mobile nav, auth check happens once in layout
 - **2025-01-18**: Used Supabase instead of custom backend — All-in-one solution with auto-scaling, native iOS SDK, built-in Apple Sign-In support
@@ -19,6 +21,8 @@ iOS-first app for session-based professionals (tutors, coaches, therapists) to r
 - **2025-01-18**: Private storage bucket for audio files — Security; access via signed URLs only
 
 ## Mistakes & Lessons
+- **2026-01-19**: Recording waves frozen on first press despite audio session pre-warming → Root cause was **thread synchronization**: `RecordingService` wasn't `@MainActor` isolated but `RecordingViewModel` was. Timer callbacks ran on different threads. Fix: Add `@MainActor` attribute to `RecordingService` class and wrap timer callbacks in `Task { @MainActor in }`.
+- **2026-01-19**: 401 "Invalid JWT" from Supabase gateway despite valid token → Supabase Swift SDK v2 doesn't reliably send auth headers to edge functions. Tried: `setAuth()`, explicit headers in `FunctionInvokeOptions`, both together. None worked reliably. Fix: (1) Disable "Verify JWT" in Supabase Dashboard → Edge Functions → Function Settings, (2) Use raw `URLSession` instead of SDK, (3) Verify token manually in function using admin client with `supabaseAdmin.auth.getUser(token)`.
 - **2026-01-19**: Recording first press didn't capture audio (100ms delay insufficient) → Pre-warm audio session at start of `startRecording()` in ViewModel by calling `prepareAudioSession()` in a parallel Task. This lets audio hardware initialize while permission check and DB operations run.
 - **2026-01-19**: Edge function lint failure blocked deployment (unused `deviceTokens` variable) → Always remove unused variables. The signed URL fix was correct but never deployed because lint failed.
 - **2026-01-19**: Edge function 401 Unauthorized after stopping recording → Supabase Swift SDK v2 doesn't always pass auth headers to function invocations (known SDK bug, see [GitHub issue #634](https://github.com/supabase/supabase-swift/issues/634)). Fix: Explicitly call `client.functions.setAuth(token: accessToken)` before invoking functions in `SupabaseClient.swift`.
@@ -42,7 +46,7 @@ iOS-first app for session-based professionals (tutors, coaches, therapists) to r
 - Supabase project created and configured (Project ID: `lkwxiocbnfpqglxqmsbj`)
 - Database schema with 8 tables + RLS policies
 - Apple Sign-In enabled (bundle ID: `com.seshrecap.app`)
-- Storage bucket `audio-files` created
+- Storage bucket `audio-files` created with RLS policies
 - Edge Functions deployed (transcribe, generate-recap, send-recap, stripe-webhook, revenuecat-webhook)
 - Web app authentication working (email/password signup)
 - Web app dark theme design with brand colors (hot pink/gold gradients)
@@ -52,9 +56,11 @@ iOS-first app for session-based professionals (tutors, coaches, therapists) to r
 - iOS Swift packages configured (supabase-swift v2, RevenueCat)
 - **iOS app branded design matching web app** (Theme.swift design system)
 - iOS views styled: WelcomeView, SignInView, DashboardView, MainTabView, SessionListView, AttendantListView, SettingsView
-- **iOS recording flow working** - record button starts immediately, sessions created with correct professional_id
+- **iOS recording waves animate on first press** - Fixed @MainActor isolation on RecordingService
 - **iOS light/dark mode toggle** - AppearanceManager with Light/Dark/System options in Settings
-- **iOS edge function calls authenticated** - transcription should work after stopping recording
+- **iOS → Edge Function auth working** - Raw URLSession with manual token, JWT verification disabled on functions
+- **Full transcription pipeline working** - Recording → Upload → AssemblyAI transcription succeeds
+- **User-friendly error handling** - Graceful messages for no speech, short recordings, low quality audio
 
 **In Progress:**
 - Stripe/RevenueCat integration pending
@@ -82,6 +88,21 @@ iOS-first app for session-based professionals (tutors, coaches, therapists) to r
 
 ## Changelog
 ### 2026-01-19
+- **Fixed recording waves not animating on first press**
+  - Root cause: Thread synchronization between `RecordingService` and `RecordingViewModel`
+  - Added `@MainActor` attribute to `RecordingService` class
+  - Wrapped Timer callbacks in `Task { @MainActor in }` blocks
+  - Marked delegate methods as `nonisolated` with MainActor task dispatch
+- **Fixed 401 "Invalid JWT" error on edge function calls**
+  - Supabase Swift SDK doesn't reliably send auth headers despite multiple attempts
+  - Changed `SupabaseClient.invoke()` to use raw `URLSession` instead of SDK
+  - Disabled "Verify JWT" in Supabase Dashboard for all edge functions
+  - Edge functions now verify token manually using admin client with `getUser(token)`
+- **Added user-friendly error handling for transcription failures**
+  - Edge function detects AssemblyAI errors (no speech, too short, low quality)
+  - Returns localized error messages and error types
+  - iOS parses `FunctionErrorResponse` and displays friendly messages
+  - Session status updated to `no_speech`, `too_short`, `low_quality`, or `error`
 - Fixed transcribe edge function 500 error and recording first press issue (`581086b`)
   - Removed unused `deviceTokens` query that was blocking lint/deployment
   - Added `prepareAudioSession()` method to RecordingService for pre-warming

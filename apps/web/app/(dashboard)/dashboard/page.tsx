@@ -1,16 +1,8 @@
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { Clock, Users, CreditCard } from 'lucide-react'
-import type { Tables } from '@/types/database'
-
-type Professional = Tables<'professionals'> & {
-  organization: Tables<'organizations'> | null
-}
-
-type Session = Tables<'sessions'> & {
-  attendant: Tables<'attendants'> | null
-  recap: Tables<'recaps'> | null
-}
+import type { ProfessionalWithOrg, SessionWithRelations } from '@/types/database'
+import { getSessionStatusClass, getRecapStatusClass, getRecapStatusLabel } from '@/lib/utils'
 
 export default async function DashboardPage() {
   const supabase = createClient()
@@ -24,7 +16,7 @@ export default async function DashboardPage() {
     .from('professionals')
     .select('*, organization:organizations(*)')
     .eq('id', user!.id)
-    .single() as { data: Professional | null }
+    .single() as { data: ProfessionalWithOrg | null }
 
   // Get recent sessions
   const { data: sessions } = await supabase
@@ -32,7 +24,7 @@ export default async function DashboardPage() {
     .select('*, attendant:attendants(*), recap:recaps(*)')
     .eq('professional_id', user!.id)
     .order('created_at', { ascending: false })
-    .limit(5) as { data: Session[] | null }
+    .limit(5) as { data: SessionWithRelations[] | null }
 
   // Get stats
   const { count: totalSessions } = await supabase
@@ -134,23 +126,11 @@ export default async function DashboardPage() {
                   </div>
                   <div className="flex items-center gap-2">
                     {session.recap && (
-                      <span
-                        className={`status-pill ${
-                          session.recap.status === 'sent' ? 'sent' : 'draft'
-                        }`}
-                      >
-                        {session.recap.status === 'sent' ? 'Sent' : 'Draft'}
+                      <span className={`status-pill ${getRecapStatusClass(session.recap.status)}`}>
+                        {getRecapStatusLabel(session.recap.status)}
                       </span>
                     )}
-                    <span
-                      className={`status-pill ${
-                        session.session_status === 'ready'
-                          ? 'ready'
-                          : session.session_status === 'error'
-                            ? 'error'
-                            : 'pending'
-                      }`}
-                    >
+                    <span className={`status-pill ${getSessionStatusClass(session.session_status)}`}>
                       {session.session_status}
                     </span>
                   </div>

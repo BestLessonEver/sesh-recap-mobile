@@ -1,13 +1,7 @@
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { SignOutButton } from './signout-button'
-import type { Tables } from '@/types/database'
-
-type Professional = Tables<'professionals'> & {
-  organization: Tables<'organizations'> | null
-}
-
-type Subscription = Tables<'subscriptions'>
+import type { Tables, ProfessionalWithOrg } from '@/types/database'
 
 export default async function SettingsPage() {
   const supabase = createClient()
@@ -20,13 +14,13 @@ export default async function SettingsPage() {
     .from('professionals')
     .select('*, organization:organizations(*)')
     .eq('id', user!.id)
-    .single() as { data: Professional | null }
+    .single() as { data: ProfessionalWithOrg | null }
 
   const { data: subscription } = await supabase
     .from('subscriptions')
     .select('*')
     .eq('organization_id', professional?.organization_id || '')
-    .single() as { data: Subscription | null }
+    .single() as { data: Tables<'subscriptions'> | null }
 
   return (
     <div className="space-y-6 animate-fade-in">

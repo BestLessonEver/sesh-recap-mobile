@@ -266,6 +266,7 @@ struct SettingsRow: View {
                     .font(.system(size: 14))
                     .foregroundStyle(iconColor)
             }
+            .accessibilityHidden(true)
 
             Text(title)
                 .foregroundStyle(Color.textPrimary)
@@ -276,6 +277,8 @@ struct SettingsRow: View {
                 .foregroundStyle(Color.textSecondary)
         }
         .padding(16)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(title): \(value)")
     }
 }
 
@@ -286,28 +289,41 @@ struct SettingsLinkRow: View {
     let url: String
 
     var body: some View {
-        Link(destination: URL(string: url)!) {
-            HStack {
-                ZStack {
-                    RoundedRectangle(cornerRadius: 8)
-                        .fill(iconColor.opacity(0.15))
-                        .frame(width: 32, height: 32)
-                    Image(systemName: icon)
-                        .font(.system(size: 14))
-                        .foregroundStyle(iconColor)
-                }
-
-                Text(title)
-                    .foregroundStyle(Color.textPrimary)
-
-                Spacer()
-
-                Image(systemName: "arrow.up.right")
-                    .font(.caption)
-                    .foregroundStyle(Color.textTertiary)
+        if let destination = URL(string: url) {
+            Link(destination: destination) {
+                linkContent
             }
-            .padding(16)
+            .accessibilityLabel(title)
+            .accessibilityHint("Opens in browser")
+        } else {
+            linkContent
+                .opacity(0.5)
         }
+    }
+
+    private var linkContent: some View {
+        HStack {
+            ZStack {
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(iconColor.opacity(0.15))
+                    .frame(width: 32, height: 32)
+                Image(systemName: icon)
+                    .font(.system(size: 14))
+                    .foregroundStyle(iconColor)
+            }
+            .accessibilityHidden(true)
+
+            Text(title)
+                .foregroundStyle(Color.textPrimary)
+
+            Spacer()
+
+            Image(systemName: "arrow.up.right")
+                .font(.caption)
+                .foregroundStyle(Color.textTertiary)
+                .accessibilityHidden(true)
+        }
+        .padding(16)
     }
 }
 

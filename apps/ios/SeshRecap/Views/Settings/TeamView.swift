@@ -42,6 +42,7 @@ struct TeamView: View {
                 } label: {
                     Image(systemName: "person.badge.plus")
                 }
+                .accessibilityLabel("Invite team member")
             }
         }
         .refreshable {
@@ -161,21 +162,15 @@ struct TeamMemberRow: View {
 
     var body: some View {
         HStack(spacing: 12) {
-            Circle()
-                .fill(Color(.systemGray4))
-                .frame(width: 40, height: 40)
-                .overlay {
-                    Text(member.name.prefix(1).uppercased())
-                        .font(.headline)
-                        .foregroundStyle(.secondary)
-                }
+            GradientAvatar(name: member.name, size: 40)
 
             VStack(alignment: .leading, spacing: 2) {
                 Text(member.name)
                     .font(.body)
+                    .foregroundStyle(Color.textPrimary)
                 Text(member.email)
                     .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Color.textSecondary)
             }
 
             Spacer()
@@ -188,13 +183,15 @@ struct TeamMemberRow: View {
                 .foregroundStyle(roleColor)
                 .clipShape(Capsule())
         }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(member.name), \(member.role.rawValue)")
     }
 
     private var roleColor: Color {
         switch member.role {
-        case .owner: return .purple
-        case .admin: return .blue
-        case .member: return .gray
+        case .owner: return .brandGold
+        case .admin: return .brandPink
+        case .member: return .textSecondary
         }
     }
 }
@@ -208,9 +205,10 @@ struct InvitationRow: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text(invitation.email)
                     .font(.body)
+                    .foregroundStyle(Color.textPrimary)
                 Text("Expires \(invitation.expiresAt, style: .relative)")
                     .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Color.textSecondary)
             }
 
             Spacer()
@@ -219,9 +217,10 @@ struct InvitationRow: View {
                 onCancel()
             } label: {
                 Image(systemName: "xmark.circle.fill")
-                    .foregroundStyle(.red)
+                    .foregroundStyle(Color.error)
             }
             .buttonStyle(.plain)
+            .accessibilityLabel("Cancel invitation for \(invitation.email)")
         }
     }
 }

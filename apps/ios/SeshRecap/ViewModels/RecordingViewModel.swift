@@ -1,5 +1,6 @@
 import Foundation
 import AVFoundation
+import Combine
 
 @MainActor
 class RecordingViewModel: ObservableObject {
@@ -8,7 +9,6 @@ class RecordingViewModel: ObservableObject {
     @Published var duration: TimeInterval = 0
     @Published var audioLevel: Float = 0
     @Published var error: Error?
-    @Published var isProcessing = false
 
     @Published var selectedAttendant: Attendant?
     @Published var sessionTitle: String = ""
@@ -16,6 +16,7 @@ class RecordingViewModel: ObservableObject {
     private var currentSessionId: UUID?
     private let recordingService = RecordingService.shared
     private let sessionsViewModel: SessionsViewModel
+    private var observationTask: Task<Void, Never>?
 
     init(sessionsViewModel: SessionsViewModel) {
         self.sessionsViewModel = sessionsViewModel
@@ -46,6 +47,7 @@ class RecordingViewModel: ObservableObject {
     // MARK: - Recording Control
 
     func startRecording() async {
+        print("🎙️ START RECORDING TAPPED")
         guard !isRecording else { return }
 
         // Pre-warm audio session FIRST (await it!)
@@ -59,7 +61,6 @@ class RecordingViewModel: ObservableObject {
             }
         }
 
-        isProcessing = true
         error = nil
 
         do {
@@ -75,13 +76,11 @@ class RecordingViewModel: ObservableObject {
 
             isRecording = true
             isPaused = false
-            isProcessing = false
 
             // Observe recording state
             observeRecordingState()
         } catch {
             self.error = error
-            isProcessing = false
         }
     }
 
@@ -95,24 +94,34 @@ class RecordingViewModel: ObservableObject {
         isPaused = false
     }
 
-    func stopRecording() async {
-        guard isRecording, let sessionId = currentSessionId else { return }
+    /// Stops recording and returns the session ID immediately.
+    /// Transcription is triggered in the background - check session status for updates.
+    func stopRecording() async -> UUID? {
+        guard isRecording, let sessionId = currentSessionId else { return nil }
 
-        isProcessing = true
+        stopObservingRecordingState()
+        let recordedDuration = duration
 
         do {
             let chunks = try await recordingService.stopRecording()
 
-            // Update session with audio info
+            // Update session with audio info and set status to uploading
             try await sessionsViewModel.updateSession(sessionId, request: UpdateSessionRequest(
                 audioChunks: chunks,
-                durationSeconds: Int(duration),
+                durationSeconds: Int(recordedDuration),
                 sessionStatus: .uploading
             ))
 
-            // Trigger transcription
-            try await sessionsViewModel.transcribeSession(sessionId)
+            // Trigger transcription in background (fire and forget)
+            Task {
+                do {
+                    try await sessionsViewModel.transcribeSession(sessionId)
+                } catch {
+                    print("Background transcription error: \(error)")
+                }
+            }
 
+            // Reset state
             isRecording = false
             isPaused = false
             duration = 0
@@ -120,14 +129,17 @@ class RecordingViewModel: ObservableObject {
             currentSessionId = nil
             selectedAttendant = nil
             sessionTitle = ""
-        } catch {
-            self.error = error
-        }
 
-        isProcessing = false
+            return sessionId
+        } catch {
+            print("Stop recording error: \(error)")
+            self.error = error
+            return nil
+        }
     }
 
     func cancelRecording() async {
+        stopObservingRecordingState()
         recordingService.cancelRecording()
 
         if let sessionId = currentSessionId {
@@ -144,13 +156,46 @@ class RecordingViewModel: ObservableObject {
     // MARK: - State Observation
 
     private func observeRecordingState() {
-        Task {
-            for await _ in Timer.publish(every: 0.1, on: .main, in: .common).autoconnect().values {
-                guard isRecording else { break }
-                duration = recordingService.duration
-                audioLevel = recordingService.audioLevel
+        print("🔵 Starting observation task")
+        stopObservingRecordingState()
+
+        // Use a Task-based polling loop that respects @MainActor isolation
+        observationTask = Task { @MainActor [weak self] in
+            print("🔵 Task loop starting, isRecording: \(self?.isRecording ?? false)")
+            var loopCount = 0
+            while !Task.isCancelled {
+                guard let self = self else {
+                    print("🔵 Task: self is nil, breaking")
+                    break
+                }
+                guard self.isRecording else {
+                    print("🔵 Task: isRecording is false, breaking")
+                    break
+                }
+
+                let newLevel = self.recordingService.audioLevel
+                self.audioLevel = newLevel
+                self.duration = self.recordingService.duration
+
+                loopCount += 1
+                if loopCount % 20 == 0 {
+                    print("🔄 Loop \(loopCount): level=\(newLevel)")
+                }
+
+                try? await Task.sleep(nanoseconds: 50_000_000) // 50ms
             }
+            print("🔵 Observation task ended after \(loopCount) iterations")
         }
+
+        // Fire immediately to get initial values
+        audioLevel = recordingService.audioLevel
+        duration = recordingService.duration
+        print("🔵 Task started, initial audioLevel: \(audioLevel)")
+    }
+
+    private func stopObservingRecordingState() {
+        observationTask?.cancel()
+        observationTask = nil
     }
 
     // MARK: - Computed Properties
@@ -162,6 +207,6 @@ class RecordingViewModel: ObservableObject {
     }
 
     var canStartRecording: Bool {
-        !isRecording && !isProcessing
+        !isRecording
     }
 }

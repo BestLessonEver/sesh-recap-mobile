@@ -10,7 +10,7 @@ import {
   Settings,
   LogOut,
 } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { cn, getInitials } from '@/lib/utils'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { createClient } from '@/lib/supabase/client'
 
@@ -52,15 +52,6 @@ export function DashboardLayout({ children, professional }: DashboardLayoutProps
     await supabase.auth.signOut()
     router.push('/')
     router.refresh()
-  }
-
-  const getInitials = (name: string) => {
-    return name
-      .split(' ')
-      .map((n) => n[0])
-      .join('')
-      .toUpperCase()
-      .slice(0, 2)
   }
 
   return (

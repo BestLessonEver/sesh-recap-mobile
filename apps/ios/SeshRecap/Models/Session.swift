@@ -1,6 +1,9 @@
 import Foundation
 
-struct Session: Codable, Identifiable, Equatable {
+struct Session: Codable, Identifiable, Equatable, Hashable {
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
     let id: UUID
     let professionalId: UUID
     var organizationId: UUID?

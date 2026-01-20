@@ -7,6 +7,7 @@ struct MainTabView: View {
 
     @State private var selectedTab = 0
     @State private var showNewSession = false
+    @State private var navigateToSessionId: UUID?
 
     var body: some View {
         ZStack {
@@ -24,7 +25,7 @@ struct MainTabView: View {
                 )
                 .tag(0)
 
-                SessionListView(viewModel: sessionsViewModel)
+                SessionListView(viewModel: sessionsViewModel, navigateToSessionId: $navigateToSessionId)
                     .tag(1)
 
                 // Placeholder for record button
@@ -50,13 +51,22 @@ struct MainTabView: View {
         .sheet(isPresented: $showNewSession) {
             NewSessionView(
                 sessionsViewModel: sessionsViewModel,
-                attendantsViewModel: attendantsViewModel
+                attendantsViewModel: attendantsViewModel,
+                onSessionCompleted: { sessionId in
+                    // Navigate to the session after recording completes
+                    Task { @MainActor in
+                        await sessionsViewModel.loadSessions(forceRefresh: true)
+                        selectedTab = 1
+                        navigateToSessionId = sessionId
+                    }
+                }
             )
         }
         .onReceive(NotificationCenter.default.publisher(for: .openSession)) { notification in
             if let sessionId = notification.userInfo?["sessionId"] as? String,
                let uuid = UUID(uuidString: sessionId) {
                 selectedTab = 1
+                navigateToSessionId = uuid
             }
         }
     }
@@ -139,7 +149,11 @@ struct TabBarButton: View {
             }
             .foregroundStyle(isSelected ? Color.brandPink : Color.textSecondary)
             .frame(maxWidth: .infinity)
+            .frame(minHeight: 44)
         }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(label)
+        .accessibilityAddTraits(isSelected ? [.isSelected] : [])
     }
 }
 
@@ -160,6 +174,8 @@ struct RecordButton: View {
             }
         }
         .frame(maxWidth: .infinity)
+        .accessibilityLabel("Start new recording")
+        .accessibilityHint("Opens the recording screen")
     }
 }
 

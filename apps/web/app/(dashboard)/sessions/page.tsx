@@ -1,11 +1,7 @@
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
-import type { Tables } from '@/types/database'
-
-type Session = Tables<'sessions'> & {
-  attendant: Tables<'attendants'> | null
-  recap: Tables<'recaps'> | null
-}
+import type { SessionWithRelations } from '@/types/database'
+import { getSessionStatusClass, getRecapStatusClass, getRecapStatusLabel } from '@/lib/utils'
 
 export default async function SessionsPage() {
   const supabase = createClient()
@@ -18,7 +14,7 @@ export default async function SessionsPage() {
     .from('sessions')
     .select('*, attendant:attendants(*), recap:recaps(*)')
     .eq('professional_id', user!.id)
-    .order('created_at', { ascending: false }) as { data: Session[] | null }
+    .order('created_at', { ascending: false }) as { data: SessionWithRelations[] | null }
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -63,23 +59,11 @@ export default async function SessionsPage() {
                 </div>
                 <div className="flex items-center gap-2 ml-4 shrink-0">
                   {session.recap && (
-                    <span
-                      className={`status-pill ${
-                        session.recap.status === 'sent' ? 'sent' : 'draft'
-                      }`}
-                    >
-                      {session.recap.status === 'sent' ? 'Sent' : 'Draft'}
+                    <span className={`status-pill ${getRecapStatusClass(session.recap.status)}`}>
+                      {getRecapStatusLabel(session.recap.status)}
                     </span>
                   )}
-                  <span
-                    className={`status-pill ${
-                      session.session_status === 'ready'
-                        ? 'ready'
-                        : session.session_status === 'error'
-                          ? 'error'
-                          : 'pending'
-                    }`}
-                  >
+                  <span className={`status-pill ${getSessionStatusClass(session.session_status)}`}>
                     {session.session_status}
                   </span>
                 </div>

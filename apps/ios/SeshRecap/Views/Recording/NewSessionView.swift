@@ -7,9 +7,12 @@ struct NewSessionView: View {
     @ObservedObject var attendantsViewModel: AttendantsViewModel
     @State private var hasStartedRecording = false
 
-    init(sessionsViewModel: SessionsViewModel, attendantsViewModel: AttendantsViewModel) {
+    let onSessionCompleted: ((UUID) -> Void)?
+
+    init(sessionsViewModel: SessionsViewModel, attendantsViewModel: AttendantsViewModel, onSessionCompleted: ((UUID) -> Void)? = nil) {
         _viewModel = StateObject(wrappedValue: RecordingViewModel(sessionsViewModel: sessionsViewModel))
         self.attendantsViewModel = attendantsViewModel
+        self.onSessionCompleted = onSessionCompleted
     }
 
     var body: some View {
@@ -20,7 +23,7 @@ struct NewSessionView: View {
 
                 VStack(spacing: 32) {
                     if viewModel.isRecording || hasStartedRecording {
-                        RecordingActiveView(viewModel: viewModel)
+                        RecordingActiveView(viewModel: viewModel, onSessionCompleted: onSessionCompleted)
                     } else {
                         // Show loading while auto-starting
                         VStack(spacing: 16) {
@@ -36,7 +39,7 @@ struct NewSessionView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbarBackground(Color.bgPrimary, for: .navigationBar)
             .toolbarColorScheme(.dark, for: .navigationBar)
-            .interactiveDismissDisabled(viewModel.isRecording || viewModel.isProcessing)
+            .interactiveDismissDisabled(viewModel.isRecording)
             .task {
                 // Auto-start recording immediately when view appears
                 if !hasStartedRecording {
@@ -56,79 +59,10 @@ struct NewSessionView: View {
     }
 }
 
-struct RecordingSetupView: View {
-    @ObservedObject var viewModel: RecordingViewModel
-    @ObservedObject var attendantsViewModel: AttendantsViewModel
-    @State private var showAttendantPicker = false
-
-    var body: some View {
-        VStack(spacing: 24) {
-            Spacer()
-
-            // Session Info
-            VStack(spacing: 16) {
-                TextField("Session Title (optional)", text: $viewModel.sessionTitle)
-                    .textFieldStyle(.roundedBorder)
-                    .padding(.horizontal)
-
-                Button {
-                    showAttendantPicker = true
-                } label: {
-                    HStack {
-                        Image(systemName: "person.fill")
-                        Text(viewModel.selectedAttendant?.name ?? "Select Attendant")
-                        Spacer()
-                        Image(systemName: "chevron.right")
-                    }
-                    .padding()
-                    .background(Color(.systemGray6))
-                    .clipShape(RoundedRectangle(cornerRadius: 10))
-                }
-                .buttonStyle(.plain)
-                .padding(.horizontal)
-            }
-
-            Spacer()
-
-            // Start Button
-            Button {
-                Task {
-                    await viewModel.startRecording()
-                }
-            } label: {
-                ZStack {
-                    Circle()
-                        .fill(Color.red)
-                        .frame(width: 100, height: 100)
-                        .shadow(color: .red.opacity(0.4), radius: 10, y: 5)
-
-                    Image(systemName: "mic.fill")
-                        .font(.system(size: 40))
-                        .foregroundStyle(.white)
-                }
-            }
-            .disabled(!viewModel.canStartRecording)
-
-            Text("Tap to start recording")
-                .foregroundStyle(.secondary)
-
-            Spacer()
-        }
-        .sheet(isPresented: $showAttendantPicker) {
-            AttendantPickerView(
-                attendants: attendantsViewModel.activeAttendants,
-                selected: $viewModel.selectedAttendant
-            )
-        }
-        .task {
-            await attendantsViewModel.loadAttendants()
-        }
-    }
-}
-
 struct RecordingActiveView: View {
     @ObservedObject var viewModel: RecordingViewModel
     @Environment(\.dismiss) private var dismiss: DismissAction
+    let onSessionCompleted: ((UUID) -> Void)?
 
     var body: some View {
         VStack(spacing: 32) {
@@ -148,9 +82,12 @@ struct RecordingActiveView: View {
                 Circle()
                     .fill(viewModel.isPaused ? Color.warning : Color.error)
                     .frame(width: 12, height: 12)
+                    .accessibilityHidden(true)
                 Text(viewModel.isPaused ? "Paused" : "Recording")
                     .foregroundStyle(Color.textSecondary)
             }
+            .accessibilityElement(children: .combine)
+            .accessibilityLabel(viewModel.isPaused ? "Recording paused" : "Recording in progress")
 
             Spacer()
 
@@ -171,7 +108,10 @@ struct RecordingActiveView: View {
                             .font(.caption)
                             .foregroundStyle(Color.textSecondary)
                     }
+                    .frame(minWidth: 44, minHeight: 60)
                 }
+                .accessibilityLabel("Cancel recording")
+                .accessibilityHint("Discards the current recording")
 
                 // Pause/Resume
                 Button {
@@ -189,13 +129,19 @@ struct RecordingActiveView: View {
                             .font(.caption)
                             .foregroundStyle(Color.textSecondary)
                     }
+                    .frame(minWidth: 44, minHeight: 60)
                 }
+                .accessibilityLabel(viewModel.isPaused ? "Resume recording" : "Pause recording")
 
                 // Stop
                 Button {
                     Task {
-                        await viewModel.stopRecording()
-                        dismiss()
+                        if let sessionId = await viewModel.stopRecording() {
+                            dismiss()
+                            onSessionCompleted?(sessionId)
+                        } else {
+                            dismiss()
+                        }
                     }
                 } label: {
                     VStack {
@@ -206,25 +152,14 @@ struct RecordingActiveView: View {
                             .font(.caption)
                             .foregroundStyle(Color.textSecondary)
                     }
+                    .frame(minWidth: 44, minHeight: 60)
                 }
-                .disabled(viewModel.isProcessing)
+                .accessibilityLabel("Stop and save recording")
             }
 
             Spacer()
         }
         .padding()
-        .overlay {
-            if viewModel.isProcessing {
-                Color.black.opacity(0.7)
-                    .ignoresSafeArea()
-                VStack(spacing: 16) {
-                    ProgressView()
-                        .tint(.white)
-                    Text("Processing...")
-                        .foregroundStyle(.white)
-                }
-            }
-        }
     }
 }
 
