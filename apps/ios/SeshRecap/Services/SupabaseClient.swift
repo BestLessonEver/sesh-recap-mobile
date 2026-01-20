@@ -1,6 +1,5 @@
 import Foundation
 import Supabase
-import Auth
 
 @MainActor
 class Database {
@@ -9,14 +8,11 @@ class Database {
     let client: SupabaseClient
 
     private init() {
+        // Note: emitLocalSessionAsInitialSession warning is cosmetic only
+        // The SDK will change default behavior in next major version
         client = SupabaseClient(
             supabaseURL: AppConfig.supabaseURL,
-            supabaseKey: AppConfig.supabaseAnonKey,
-            options: SupabaseClientOptions(
-                auth: AuthClient.Configuration(
-                    emitLocalSessionAsInitialSession: true
-                )
-            )
+            supabaseKey: AppConfig.supabaseAnonKey
         )
     }
 
