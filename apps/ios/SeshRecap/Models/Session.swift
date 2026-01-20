@@ -7,7 +7,7 @@ struct Session: Codable, Identifiable, Equatable, Hashable {
     let id: UUID
     let professionalId: UUID
     var organizationId: UUID?
-    var attendantId: UUID?
+    var clientId: UUID?
     var title: String?
     var audioUrl: String?
     var audioChunks: [String]?
@@ -18,7 +18,7 @@ struct Session: Codable, Identifiable, Equatable, Hashable {
     var updatedAt: Date
 
     // Joined data
-    var attendant: Attendant?
+    var client: Client?
     var recap: Recap?
 
     enum SessionStatus: String, Codable {
@@ -33,7 +33,7 @@ struct Session: Codable, Identifiable, Equatable, Hashable {
         case id
         case professionalId = "professional_id"
         case organizationId = "organization_id"
-        case attendantId = "attendant_id"
+        case clientId = "attendant_id"
         case title
         case audioUrl = "audio_url"
         case audioChunks = "audio_chunks"
@@ -42,7 +42,7 @@ struct Session: Codable, Identifiable, Equatable, Hashable {
         case sessionStatus = "session_status"
         case createdAt = "created_at"
         case updatedAt = "updated_at"
-        case attendant
+        case client = "attendant"
         case recap
     }
 
@@ -71,26 +71,26 @@ struct Session: Codable, Identifiable, Equatable, Hashable {
 }
 
 struct CreateSessionRequest {
-    let attendantId: UUID?
+    let clientId: UUID?
     let title: String?
 }
 
 struct InsertSessionRequest: Codable {
     let professionalId: String
-    let attendantId: String?
+    let clientId: String?
     let title: String?
     let sessionStatus: String
 
     enum CodingKeys: String, CodingKey {
         case professionalId = "professional_id"
-        case attendantId = "attendant_id"
+        case clientId = "attendant_id"
         case title
         case sessionStatus = "session_status"
     }
 }
 
 struct UpdateSessionRequest: Codable {
-    var attendantId: UUID?
+    var clientId: UUID?
     var title: String?
     var audioUrl: String?
     var audioChunks: [String]?
@@ -98,7 +98,7 @@ struct UpdateSessionRequest: Codable {
     var sessionStatus: Session.SessionStatus?
 
     enum CodingKeys: String, CodingKey {
-        case attendantId = "attendant_id"
+        case clientId = "attendant_id"
         case title
         case audioUrl = "audio_url"
         case audioChunks = "audio_chunks"

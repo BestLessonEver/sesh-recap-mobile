@@ -1,13 +1,13 @@
 import SwiftUI
 
-struct AttendantListView: View {
-    @ObservedObject var viewModel: AttendantsViewModel
+struct ClientListView: View {
+    @ObservedObject var viewModel: ClientsViewModel
     @State private var searchText = ""
-    @State private var showAddAttendant = false
+    @State private var showAddClient = false
     @State private var showArchived = false
 
-    var filteredAttendants: [Attendant] {
-        let source = showArchived ? viewModel.archivedAttendants : viewModel.activeAttendants
+    var filteredClients: [Client] {
+        let source = showArchived ? viewModel.archivedClients : viewModel.activeClients
         if searchText.isEmpty {
             return source
         }
@@ -20,24 +20,24 @@ struct AttendantListView: View {
                 Color.bgPrimary
                     .ignoresSafeArea()
 
-                if viewModel.attendants.isEmpty && !viewModel.isLoading {
+                if viewModel.clients.isEmpty && !viewModel.isLoading {
                     VStack(spacing: 16) {
                         Image(systemName: "person.2")
                             .font(.system(size: 50))
                             .foregroundStyle(Color.textTertiary)
                             .accessibilityHidden(true)
-                        Text("No Attendants")
+                        Text("No Clients")
                             .font(.title2)
                             .fontWeight(.bold)
                             .foregroundStyle(Color.textPrimary)
-                        Text("Add your first attendant to get started")
+                        Text("Add your first client to get started")
                             .font(.subheadline)
                             .foregroundStyle(Color.textSecondary)
 
                         Button {
-                            showAddAttendant = true
+                            showAddClient = true
                         } label: {
-                            Text("Add Attendant")
+                            Text("Add Client")
                                 .fontWeight(.semibold)
                                 .padding(.horizontal, 24)
                                 .padding(.vertical, 12)
@@ -50,11 +50,11 @@ struct AttendantListView: View {
                 } else {
                     ScrollView {
                         LazyVStack(spacing: 12) {
-                            ForEach(filteredAttendants) { attendant in
+                            ForEach(filteredClients) { client in
                                 NavigationLink {
-                                    AttendantDetailView(attendant: attendant, viewModel: viewModel)
+                                    ClientDetailView(client: client, viewModel: viewModel)
                                 } label: {
-                                    BrandAttendantRow(attendant: attendant)
+                                    BrandClientRow(client: client)
                                 }
                                 .buttonStyle(.plain)
                             }
@@ -64,11 +64,11 @@ struct AttendantListView: View {
                     }
                 }
             }
-            .navigationTitle("Attendants")
+            .navigationTitle("Clients")
             .navigationBarTitleDisplayMode(.large)
             .toolbarBackground(Color.bgPrimary, for: .navigationBar)
             .toolbarColorScheme(.dark, for: .navigationBar)
-            .searchable(text: $searchText, prompt: "Search attendants")
+            .searchable(text: $searchText, prompt: "Search clients")
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Menu {
@@ -86,50 +86,50 @@ struct AttendantListView: View {
                         Image(systemName: "line.3.horizontal.decrease.circle")
                             .foregroundStyle(Color.textSecondary)
                     }
-                    .accessibilityLabel("Filter attendants")
-                    .accessibilityHint("Shows \(showArchived ? "archived" : "active") attendants")
+                    .accessibilityLabel("Filter clients")
+                    .accessibilityHint("Shows \(showArchived ? "archived" : "active") clients")
                 }
 
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
-                        showAddAttendant = true
+                        showAddClient = true
                     } label: {
                         Image(systemName: "plus")
                             .foregroundStyle(Color.brandPink)
                     }
-                    .accessibilityLabel("Add attendant")
+                    .accessibilityLabel("Add client")
                 }
             }
             .refreshable {
-                await viewModel.loadAttendants(forceRefresh: true)
+                await viewModel.loadClients(forceRefresh: true)
             }
-            .sheet(isPresented: $showAddAttendant) {
-                AddAttendantView(viewModel: viewModel)
+            .sheet(isPresented: $showAddClient) {
+                AddClientView(viewModel: viewModel)
             }
             .task {
-                await viewModel.loadAttendants()
+                await viewModel.loadClients()
             }
         }
     }
 }
 
-struct BrandAttendantRow: View {
-    let attendant: Attendant
+struct BrandClientRow: View {
+    let client: Client
 
     var body: some View {
         BrandCard(padding: 16) {
             HStack(spacing: 12) {
                 // Avatar
-                GradientAvatar(name: attendant.name, size: 48)
+                GradientAvatar(name: client.name, size: 48)
                     .accessibilityHidden(true)
 
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(attendant.name)
+                    Text(client.name)
                         .font(.body)
                         .fontWeight(.medium)
                         .foregroundStyle(Color.textPrimary)
 
-                    if let email = attendant.displayEmail {
+                    if let email = client.displayEmail {
                         Text(email)
                             .font(.caption)
                             .foregroundStyle(Color.textSecondary)
@@ -138,7 +138,7 @@ struct BrandAttendantRow: View {
 
                 Spacer()
 
-                if let tags = attendant.tags, !tags.isEmpty {
+                if let tags = client.tags, !tags.isEmpty {
                     Text(tags.first!)
                         .font(.caption)
                         .padding(.horizontal, 10)
@@ -159,11 +159,11 @@ struct BrandAttendantRow: View {
     }
 
     private var accessibilityDescription: String {
-        var description = attendant.name
-        if let email = attendant.displayEmail {
+        var description = client.name
+        if let email = client.displayEmail {
             description += ", \(email)"
         }
-        if let tags = attendant.tags, let firstTag = tags.first {
+        if let tags = client.tags, let firstTag = tags.first {
             description += ", tagged as \(firstTag)"
         }
         return description
@@ -171,5 +171,5 @@ struct BrandAttendantRow: View {
 }
 
 #Preview {
-    AttendantListView(viewModel: AttendantsViewModel())
+    ClientListView(viewModel: ClientsViewModel())
 }

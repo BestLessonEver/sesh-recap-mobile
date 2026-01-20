@@ -8,11 +8,11 @@ class DashboardViewModel: ObservableObject {
     @Published var error: Error?
 
     let sessionsViewModel: SessionsViewModel
-    let attendantsViewModel: AttendantsViewModel
+    let clientsViewModel: ClientsViewModel
 
-    init(sessionsViewModel: SessionsViewModel, attendantsViewModel: AttendantsViewModel) {
+    init(sessionsViewModel: SessionsViewModel, clientsViewModel: ClientsViewModel) {
         self.sessionsViewModel = sessionsViewModel
-        self.attendantsViewModel = attendantsViewModel
+        self.clientsViewModel = clientsViewModel
     }
 
     // MARK: - Load Dashboard
@@ -26,7 +26,7 @@ class DashboardViewModel: ObservableObject {
                 await self.sessionsViewModel.loadSessions()
             }
             group.addTask {
-                await self.attendantsViewModel.loadAttendants()
+                await self.clientsViewModel.loadClients()
             }
         }
 
@@ -42,7 +42,7 @@ class DashboardViewModel: ObservableObject {
                 await self.sessionsViewModel.loadSessions(forceRefresh: true)
             }
             group.addTask {
-                await self.attendantsViewModel.loadAttendants(forceRefresh: true)
+                await self.clientsViewModel.loadClients(forceRefresh: true)
             }
         }
 
@@ -70,7 +70,7 @@ class DashboardViewModel: ObservableObject {
 
         stats = DashboardStats(
             totalSessions: allSessions.count,
-            totalAttendants: attendantsViewModel.activeAttendants.count,
+            totalClients: clientsViewModel.activeClients.count,
             thisWeekSessions: thisWeekSessions.count,
             thisMonthSessions: thisMonthSessions.count,
             thisWeekMinutes: thisWeekMinutes,
@@ -82,7 +82,7 @@ class DashboardViewModel: ObservableObject {
 
 struct DashboardStats {
     var totalSessions: Int = 0
-    var totalAttendants: Int = 0
+    var totalClients: Int = 0
     var thisWeekSessions: Int = 0
     var thisMonthSessions: Int = 0
     var thisWeekMinutes: Int = 0

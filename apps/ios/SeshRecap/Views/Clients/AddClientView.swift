@@ -1,10 +1,10 @@
 import SwiftUI
 
-struct AddAttendantView: View {
+struct AddClientView: View {
     @Environment(\.dismiss) private var dismiss: DismissAction
-    @ObservedObject var viewModel: AttendantsViewModel
+    @ObservedObject var viewModel: ClientsViewModel
 
-    init(viewModel: AttendantsViewModel) {
+    init(viewModel: ClientsViewModel) {
         self.viewModel = viewModel
     }
 
@@ -31,7 +31,7 @@ struct AddAttendantView: View {
                 }
 
                 Section {
-                    Toggle("Send recaps directly to attendant", isOn: $isSelfContact)
+                    Toggle("Send recaps directly to client", isOn: $isSelfContact)
                 } footer: {
                     Text("Turn off if recaps should go to a parent or guardian instead")
                 }
@@ -55,7 +55,7 @@ struct AddAttendantView: View {
                         .frame(minHeight: 80)
                 }
             }
-            .navigationTitle("Add Attendant")
+            .navigationTitle("Add Client")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
@@ -66,7 +66,7 @@ struct AddAttendantView: View {
 
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Add") {
-                        addAttendant()
+                        addClient()
                     }
                     .disabled(!isFormValid || isSaving)
                 }
@@ -92,7 +92,7 @@ struct AddAttendantView: View {
         !name.isEmpty && (isSelfContact ? true : !contactEmails.isEmpty)
     }
 
-    private func addAttendant() {
+    private func addClient() {
         isSaving = true
         Task {
             do {
@@ -101,7 +101,7 @@ struct AddAttendantView: View {
                 let tagsArray = tags.isEmpty ? nil :
                     tags.split(separator: ",").map { $0.trimmingCharacters(in: .whitespaces) }
 
-                _ = try await viewModel.createAttendant(CreateAttendantRequest(
+                _ = try await viewModel.createClient(CreateClientRequest(
                     name: name,
                     email: email.isEmpty ? nil : email,
                     contactEmails: emailsArray,
@@ -121,6 +121,6 @@ struct AddAttendantView: View {
 
 #Preview {
     NavigationStack {
-        AddAttendantView(viewModel: AttendantsViewModel())
+        AddClientView(viewModel: ClientsViewModel())
     }
 }

@@ -43,8 +43,8 @@ struct DashboardView: View {
                             )
 
                             BrandStatCard(
-                                title: "Attendants",
-                                value: "\(viewModel.stats.totalAttendants)",
+                                title: "Clients",
+                                value: "\(viewModel.stats.totalClients)",
                                 icon: "person.2.fill",
                                 iconColor: .brandGold
                             )
@@ -180,8 +180,8 @@ struct BrandSessionRow: View {
         BrandCard(padding: 12) {
             HStack(spacing: 12) {
                 // Avatar
-                if let attendant = session.attendant {
-                    GradientAvatar(name: attendant.name, size: 40)
+                if let client = session.client {
+                    GradientAvatar(name: client.name, size: 40)
                 } else {
                     GradientAvatar(name: "?", size: 40)
                 }
@@ -195,8 +195,8 @@ struct BrandSessionRow: View {
                         .lineLimit(1)
 
                     HStack(spacing: 8) {
-                        if let attendant = session.attendant {
-                            Text(attendant.name)
+                        if let client = session.client {
+                            Text(client.name)
                                 .font(.caption)
                                 .foregroundStyle(Color.textSecondary)
                         }
@@ -241,7 +241,7 @@ struct BrandSessionRow: View {
     DashboardView(
         viewModel: DashboardViewModel(
             sessionsViewModel: SessionsViewModel(),
-            attendantsViewModel: AttendantsViewModel()
+            clientsViewModel: ClientsViewModel()
         )
     )
     .environmentObject(AuthViewModel())

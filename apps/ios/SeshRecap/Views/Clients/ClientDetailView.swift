@@ -1,8 +1,8 @@
 import SwiftUI
 
-struct AttendantDetailView: View {
-    let attendant: Attendant
-    @ObservedObject var viewModel: AttendantsViewModel
+struct ClientDetailView: View {
+    let client: Client
+    @ObservedObject var viewModel: ClientsViewModel
     @Environment(\.dismiss) private var dismiss: DismissAction
 
     @State private var name: String
@@ -17,17 +17,17 @@ struct AttendantDetailView: View {
     @State private var showDeleteConfirmation = false
     @State private var error: Error?
 
-    init(attendant: Attendant, viewModel: AttendantsViewModel) {
-        self.attendant = attendant
+    init(client: Client, viewModel: ClientsViewModel) {
+        self.client = client
         self.viewModel = viewModel
 
-        _name = State(initialValue: attendant.name)
-        _email = State(initialValue: attendant.email ?? "")
-        _contactName = State(initialValue: attendant.contactName ?? "")
-        _contactEmails = State(initialValue: attendant.contactEmails?.joined(separator: ", ") ?? "")
-        _isSelfContact = State(initialValue: attendant.isSelfContact)
-        _notes = State(initialValue: attendant.notes ?? "")
-        _tags = State(initialValue: attendant.tags?.joined(separator: ", ") ?? "")
+        _name = State(initialValue: client.name)
+        _email = State(initialValue: client.email ?? "")
+        _contactName = State(initialValue: client.contactName ?? "")
+        _contactEmails = State(initialValue: client.contactEmails?.joined(separator: ", ") ?? "")
+        _isSelfContact = State(initialValue: client.isSelfContact)
+        _notes = State(initialValue: client.notes ?? "")
+        _tags = State(initialValue: client.tags?.joined(separator: ", ") ?? "")
     }
 
     var body: some View {
@@ -41,7 +41,7 @@ struct AttendantDetailView: View {
             }
 
             Section {
-                Toggle("Send recaps directly to attendant", isOn: $isSelfContact)
+                Toggle("Send recaps directly to client", isOn: $isSelfContact)
             } footer: {
                 Text("When off, recaps will be sent to contact emails instead")
             }
@@ -66,13 +66,13 @@ struct AttendantDetailView: View {
             }
 
             Section {
-                if attendant.archived {
-                    Button("Restore Attendant") {
-                        restoreAttendant()
+                if client.archived {
+                    Button("Restore Client") {
+                        restoreClient()
                     }
                 } else {
-                    Button("Archive Attendant", role: .destructive) {
-                        archiveAttendant()
+                    Button("Archive Client", role: .destructive) {
+                        archiveClient()
                     }
                 }
 
@@ -81,7 +81,7 @@ struct AttendantDetailView: View {
                 }
             }
         }
-        .navigationTitle("Edit Attendant")
+        .navigationTitle("Edit Client")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .confirmationAction) {
@@ -92,12 +92,12 @@ struct AttendantDetailView: View {
             }
         }
         .disabled(isSaving)
-        .confirmationDialog("Delete Attendant", isPresented: $showDeleteConfirmation) {
+        .confirmationDialog("Delete Client", isPresented: $showDeleteConfirmation) {
             Button("Delete", role: .destructive) {
-                deleteAttendant()
+                deleteClient()
             }
         } message: {
-            Text("This will permanently delete the attendant and cannot be undone.")
+            Text("This will permanently delete the client and cannot be undone.")
         }
         .alert("Error", isPresented: .constant(error != nil)) {
             Button("OK") { error = nil }
@@ -107,13 +107,13 @@ struct AttendantDetailView: View {
     }
 
     private var hasChanges: Bool {
-        name != attendant.name ||
-        email != (attendant.email ?? "") ||
-        contactName != (attendant.contactName ?? "") ||
-        contactEmails != (attendant.contactEmails?.joined(separator: ", ") ?? "") ||
-        isSelfContact != attendant.isSelfContact ||
-        notes != (attendant.notes ?? "") ||
-        tags != (attendant.tags?.joined(separator: ", ") ?? "")
+        name != client.name ||
+        email != (client.email ?? "") ||
+        contactName != (client.contactName ?? "") ||
+        contactEmails != (client.contactEmails?.joined(separator: ", ") ?? "") ||
+        isSelfContact != client.isSelfContact ||
+        notes != (client.notes ?? "") ||
+        tags != (client.tags?.joined(separator: ", ") ?? "")
     }
 
     private func saveChanges() {
@@ -125,7 +125,7 @@ struct AttendantDetailView: View {
                 let tagsArray = tags.isEmpty ? nil :
                     tags.split(separator: ",").map { $0.trimmingCharacters(in: .whitespaces) }
 
-                try await viewModel.updateAttendant(attendant.id, UpdateAttendantRequest(
+                try await viewModel.updateClient(client.id, UpdateClientRequest(
                     name: name,
                     email: email.isEmpty ? nil : email,
                     contactEmails: emailsArray,
@@ -142,10 +142,10 @@ struct AttendantDetailView: View {
         }
     }
 
-    private func archiveAttendant() {
+    private func archiveClient() {
         Task {
             do {
-                try await viewModel.archiveAttendant(attendant.id)
+                try await viewModel.archiveClient(client.id)
                 dismiss()
             } catch {
                 self.error = error
@@ -153,10 +153,10 @@ struct AttendantDetailView: View {
         }
     }
 
-    private func restoreAttendant() {
+    private func restoreClient() {
         Task {
             do {
-                try await viewModel.unarchiveAttendant(attendant.id)
+                try await viewModel.unarchiveClient(client.id)
                 dismiss()
             } catch {
                 self.error = error
@@ -164,10 +164,10 @@ struct AttendantDetailView: View {
         }
     }
 
-    private func deleteAttendant() {
+    private func deleteClient() {
         Task {
             do {
-                try await viewModel.deleteAttendant(attendant.id)
+                try await viewModel.deleteClient(client.id)
                 dismiss()
             } catch {
                 self.error = error

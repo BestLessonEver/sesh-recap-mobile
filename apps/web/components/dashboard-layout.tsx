@@ -30,7 +30,7 @@ interface DashboardLayoutProps {
 const sidebarNavigation = [
   { name: 'Home', href: '/dashboard', icon: Home },
   { name: 'Sessions', href: '/sessions', icon: Clock },
-  { name: 'Attendants', href: '/attendants', icon: Users },
+  { name: 'Clients', href: '/clients', icon: Users },
   { name: 'Settings', href: '/settings', icon: Settings },
 ]
 
@@ -39,7 +39,7 @@ const mobileNavigation = [
   { name: 'Home', href: '/dashboard', icon: Home },
   { name: 'Sessions', href: '/sessions', icon: Clock },
   // Record button goes in the middle (handled separately)
-  { name: 'Attendants', href: '/attendants', icon: Users },
+  { name: 'Clients', href: '/clients', icon: Users },
   { name: 'Settings', href: '/settings', icon: Settings },
 ]
 

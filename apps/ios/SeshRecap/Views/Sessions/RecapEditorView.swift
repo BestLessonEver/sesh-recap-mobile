@@ -32,9 +32,9 @@ struct RecapEditorView: View {
                         .frame(minHeight: 300)
                 }
 
-                if let attendant = session.attendant {
+                if let client = session.client {
                     Section("Recipients") {
-                        ForEach(attendant.allEmails, id: \.self) { email in
+                        ForEach(client.allEmails, id: \.self) { email in
                             Label(email, systemImage: "envelope")
                         }
                     }

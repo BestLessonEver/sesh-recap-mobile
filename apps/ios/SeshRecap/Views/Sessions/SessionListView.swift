@@ -17,7 +17,7 @@ struct SessionListView: View {
         }
         return viewModel.sessions.filter { session in
             session.displayTitle.localizedCaseInsensitiveContains(searchText) ||
-            session.attendant?.name.localizedCaseInsensitiveContains(searchText) == true
+            session.client?.name.localizedCaseInsensitiveContains(searchText) == true
         }
     }
 
@@ -99,8 +99,8 @@ struct BrandSessionListRow: View {
                         .lineLimit(1)
 
                     HStack(spacing: 8) {
-                        if let attendant = session.attendant {
-                            Label(attendant.name, systemImage: "person.fill")
+                        if let client = session.client {
+                            Label(client.name, systemImage: "person.fill")
                                 .font(.caption)
                                 .foregroundStyle(Color.textSecondary)
                         }

@@ -270,6 +270,9 @@ export type ProfessionalWithOrg = Tables<'professionals'> & {
 }
 
 export type SessionWithRelations = Tables<'sessions'> & {
-  attendant: Tables<'attendants'> | null
+  client: Tables<'attendants'> | null
   recap: Tables<'recaps'> | null
 }
+
+// Alias for Client (maps to attendants table in DB)
+export type Client = Tables<'attendants'>

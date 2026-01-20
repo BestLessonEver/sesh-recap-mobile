@@ -4,14 +4,14 @@ struct NewSessionView: View {
     @Environment(\.dismiss) private var dismiss: DismissAction
     @StateObject private var viewModel: RecordingViewModel
 
-    @ObservedObject var attendantsViewModel: AttendantsViewModel
+    @ObservedObject var clientsViewModel: ClientsViewModel
     @State private var hasStartedRecording = false
 
     let onSessionCompleted: ((UUID) -> Void)?
 
-    init(sessionsViewModel: SessionsViewModel, attendantsViewModel: AttendantsViewModel, onSessionCompleted: ((UUID) -> Void)? = nil) {
+    init(sessionsViewModel: SessionsViewModel, clientsViewModel: ClientsViewModel, onSessionCompleted: ((UUID) -> Void)? = nil) {
         _viewModel = StateObject(wrappedValue: RecordingViewModel(sessionsViewModel: sessionsViewModel))
-        self.attendantsViewModel = attendantsViewModel
+        self.clientsViewModel = clientsViewModel
         self.onSessionCompleted = onSessionCompleted
     }
 
@@ -201,9 +201,9 @@ struct AudioLevelMeter: View {
     }
 }
 
-struct AttendantPickerView: View {
-    let attendants: [Attendant]
-    @Binding var selected: Attendant?
+struct ClientPickerView: View {
+    let clients: [Client]
+    @Binding var selected: Client?
     @Environment(\.dismiss) private var dismiss: DismissAction
 
     var body: some View {
@@ -214,7 +214,7 @@ struct AttendantPickerView: View {
                     dismiss()
                 } label: {
                     HStack {
-                        Text("No Attendant")
+                        Text("No Client")
                         Spacer()
                         if selected == nil {
                             Image(systemName: "checkmark")
@@ -223,15 +223,15 @@ struct AttendantPickerView: View {
                     }
                 }
 
-                ForEach(attendants) { attendant in
+                ForEach(clients) { client in
                     Button {
-                        selected = attendant
+                        selected = client
                         dismiss()
                     } label: {
                         HStack {
-                            Text(attendant.name)
+                            Text(client.name)
                             Spacer()
-                            if selected?.id == attendant.id {
+                            if selected?.id == client.id {
                                 Image(systemName: "checkmark")
                                     .foregroundStyle(.blue)
                             }
@@ -239,7 +239,7 @@ struct AttendantPickerView: View {
                     }
                 }
             }
-            .navigationTitle("Select Attendant")
+            .navigationTitle("Select Client")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
@@ -255,6 +255,6 @@ struct AttendantPickerView: View {
 #Preview {
     NewSessionView(
         sessionsViewModel: SessionsViewModel(),
-        attendantsViewModel: AttendantsViewModel()
+        clientsViewModel: ClientsViewModel()
     )
 }

@@ -79,17 +79,17 @@ struct SessionDetailView: View {
                     }
                 }
 
-                if let attendant = session.attendant {
+                if let client = session.client {
                     Rectangle()
                         .fill(Color.border)
                         .frame(height: 1)
 
                     HStack {
-                        GradientAvatar(name: attendant.name, size: 32)
-                        Text(attendant.name)
+                        GradientAvatar(name: client.name, size: 32)
+                        Text(client.name)
                             .foregroundStyle(Color.textPrimary)
                         Spacer()
-                        if let email = attendant.displayEmail {
+                        if let email = client.displayEmail {
                             Text(email)
                                 .font(.caption)
                                 .foregroundStyle(Color.textSecondary)

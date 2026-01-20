@@ -10,7 +10,7 @@ class RecordingViewModel: ObservableObject {
     @Published var audioLevel: Float = 0
     @Published var error: Error?
 
-    @Published var selectedAttendant: Attendant?
+    @Published var selectedClient: Client?
     @Published var sessionTitle: String = ""
 
     private var currentSessionId: UUID?
@@ -66,7 +66,7 @@ class RecordingViewModel: ObservableObject {
         do {
             // Create session in database
             let session = try await sessionsViewModel.createSession(
-                attendantId: selectedAttendant?.id,
+                clientId: selectedClient?.id,
                 title: sessionTitle.isEmpty ? nil : sessionTitle
             )
             currentSessionId = session.id
@@ -127,7 +127,7 @@ class RecordingViewModel: ObservableObject {
             duration = 0
             audioLevel = 0
             currentSessionId = nil
-            selectedAttendant = nil
+            selectedClient = nil
             sessionTitle = ""
 
             return sessionId

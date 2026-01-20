@@ -12,7 +12,7 @@ export default async function SessionsPage() {
 
   const { data: sessions } = await supabase
     .from('sessions')
-    .select('*, attendant:attendants(*), recap:recaps(*)')
+    .select('*, client:attendants!attendant_id(*), recap:recaps(*)')
     .eq('professional_id', user!.id)
     .order('created_at', { ascending: false }) as { data: SessionWithRelations[] | null }
 
@@ -38,7 +38,7 @@ export default async function SessionsPage() {
               <div className="flex items-start justify-between w-full">
                 <div className="flex items-center gap-4">
                   <div className="avatar">
-                    {session.attendant?.name?.charAt(0).toUpperCase() || '?'}
+                    {session.client?.name?.charAt(0).toUpperCase() || '?'}
                   </div>
                   <div className="flex-1 min-w-0">
                     <h3 className="font-medium">
@@ -46,7 +46,7 @@ export default async function SessionsPage() {
                         `Session on ${new Date(session.created_at).toLocaleDateString()}`}
                     </h3>
                     <p className="text-sm text-muted-foreground mt-0.5">
-                      {session.attendant?.name || 'No attendant'} &bull;{' '}
+                      {session.client?.name || 'No client'} &bull;{' '}
                       {Math.floor(session.duration_seconds / 60)} min &bull;{' '}
                       {new Date(session.created_at).toLocaleString()}
                     </p>

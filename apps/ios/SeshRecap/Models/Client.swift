@@ -1,6 +1,6 @@
 import Foundation
 
-struct Attendant: Codable, Identifiable, Equatable {
+struct Client: Codable, Identifiable, Equatable {
     let id: UUID
     let professionalId: UUID
     var organizationId: UUID?
@@ -50,7 +50,7 @@ struct Attendant: Codable, Identifiable, Equatable {
     }
 }
 
-struct CreateAttendantRequest {
+struct CreateClientRequest {
     let name: String
     let email: String?
     let contactEmails: [String]?
@@ -60,7 +60,7 @@ struct CreateAttendantRequest {
     let notes: String?
 }
 
-struct InsertAttendantRequest: Codable {
+struct InsertClientRequest: Codable {
     let professionalId: String
     let name: String
     let email: String?
@@ -82,7 +82,7 @@ struct InsertAttendantRequest: Codable {
     }
 }
 
-struct UpdateAttendantRequest: Codable {
+struct UpdateClientRequest: Codable {
     var name: String?
     var email: String?
     var contactEmails: [String]?

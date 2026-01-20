@@ -21,7 +21,7 @@ export default async function DashboardPage() {
   // Get recent sessions
   const { data: sessions } = await supabase
     .from('sessions')
-    .select('*, attendant:attendants(*), recap:recaps(*)')
+    .select('*, client:attendants!attendant_id(*), recap:recaps(*)')
     .eq('professional_id', user!.id)
     .order('created_at', { ascending: false })
     .limit(5) as { data: SessionWithRelations[] | null }
@@ -32,7 +32,7 @@ export default async function DashboardPage() {
     .select('*', { count: 'exact', head: true })
     .eq('professional_id', user!.id)
 
-  const { count: totalAttendants } = await supabase
+  const { count: totalClients } = await supabase
     .from('attendants')
     .select('*', { count: 'exact', head: true })
     .eq('professional_id', user!.id)
@@ -70,9 +70,9 @@ export default async function DashboardPage() {
             <div className="w-10 h-10 rounded-lg bg-secondary/10 flex items-center justify-center">
               <Users className="w-5 h-5 text-secondary" />
             </div>
-            <p className="text-sm text-muted-foreground">Attendants</p>
+            <p className="text-sm text-muted-foreground">Clients</p>
           </div>
-          <p className="text-3xl font-bold">{totalAttendants || 0}</p>
+          <p className="text-3xl font-bold">{totalClients || 0}</p>
         </div>
         <div className="card p-6">
           <div className="flex items-center gap-3 mb-3">
@@ -111,7 +111,7 @@ export default async function DashboardPage() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
                     <div className="avatar-sm">
-                      {session.attendant?.name?.charAt(0).toUpperCase() || '?'}
+                      {session.client?.name?.charAt(0).toUpperCase() || '?'}
                     </div>
                     <div>
                       <p className="font-medium">
@@ -119,7 +119,7 @@ export default async function DashboardPage() {
                           `Session on ${new Date(session.created_at).toLocaleDateString()}`}
                       </p>
                       <p className="text-sm text-muted-foreground">
-                        {session.attendant?.name || 'No attendant'} &bull;{' '}
+                        {session.client?.name || 'No client'} &bull;{' '}
                         {Math.floor(session.duration_seconds / 60)} min
                       </p>
                     </div>

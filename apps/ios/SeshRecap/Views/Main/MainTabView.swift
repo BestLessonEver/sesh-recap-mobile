@@ -3,7 +3,7 @@ import SwiftUI
 struct MainTabView: View {
     @EnvironmentObject var authViewModel: AuthViewModel
     @StateObject private var sessionsViewModel = SessionsViewModel()
-    @StateObject private var attendantsViewModel = AttendantsViewModel()
+    @StateObject private var clientsViewModel = ClientsViewModel()
 
     @State private var selectedTab = 0
     @State private var showNewSession = false
@@ -20,7 +20,7 @@ struct MainTabView: View {
                 DashboardView(
                     viewModel: DashboardViewModel(
                         sessionsViewModel: sessionsViewModel,
-                        attendantsViewModel: attendantsViewModel
+                        clientsViewModel: clientsViewModel
                     )
                 )
                 .tag(0)
@@ -32,7 +32,7 @@ struct MainTabView: View {
                 Color.clear
                     .tag(2)
 
-                AttendantListView(viewModel: attendantsViewModel)
+                ClientListView(viewModel: clientsViewModel)
                     .tag(3)
 
                 SettingsView()
@@ -51,7 +51,7 @@ struct MainTabView: View {
         .sheet(isPresented: $showNewSession) {
             NewSessionView(
                 sessionsViewModel: sessionsViewModel,
-                attendantsViewModel: attendantsViewModel,
+                clientsViewModel: clientsViewModel,
                 onSessionCompleted: { sessionId in
                     // Navigate to the session after recording completes
                     Task { @MainActor in
@@ -81,7 +81,7 @@ struct BrandTabBar: View {
     private let tabs: [(icon: String, label: String, index: Int)] = [
         ("house.fill", "Home", 0),
         ("clock.fill", "Sessions", 1),
-        ("person.2.fill", "Attendants", 3),
+        ("person.2.fill", "Clients", 3),
         ("gearshape.fill", "Settings", 4)
     ]
 

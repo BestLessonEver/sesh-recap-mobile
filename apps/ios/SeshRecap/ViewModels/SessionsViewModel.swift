@@ -26,7 +26,7 @@ class SessionsViewModel: ObservableObject {
                 .from(Database.Table.sessions)
                 .select("""
                     *,
-                    attendant:attendants(*),
+                    attendant:attendants!attendant_id(*),
                     recap:recaps(*)
                 """)
                 .eq("professional_id", value: userId)
@@ -43,7 +43,7 @@ class SessionsViewModel: ObservableObject {
 
     // MARK: - Create Session
 
-    func createSession(attendantId: UUID?, title: String?) async throws -> Session {
+    func createSession(clientId: UUID?, title: String?) async throws -> Session {
         guard let userId = Database.shared.currentUserId else {
             throw SessionError.notAuthenticated
         }
@@ -54,7 +54,7 @@ class SessionsViewModel: ObservableObject {
         // professionals.id = auth.users.id (same UUID)
         let insertRequest = InsertSessionRequest(
             professionalId: userId.uuidString,
-            attendantId: attendantId?.uuidString,
+            clientId: clientId?.uuidString,
             title: title,
             sessionStatus: "recording"
         )

@@ -12,12 +12,13 @@ iOS-first app for session-based professionals (tutors, coaches, therapists) to r
 - **Billing**: RevenueCat (iOS), Stripe (web)
 
 ## Key Decisions
+- **2026-01-20**: Renamed "Attendant" to "Client" in UI/code — More intuitive for professionals; database table stays as `attendants` to avoid migration
 - **2026-01-19**: Disabled JWT verification on edge functions, verify manually with admin client — Supabase Swift SDK has auth header issues; manual verification with `getUser(token)` is more reliable
 - **2026-01-19**: Use raw URLSession for edge function calls instead of SDK — SDK's `functions.invoke()` doesn't reliably pass auth headers even with `setAuth()` and explicit headers
 - **2026-01-19**: Created Theme.swift design system for iOS — Centralized brand colors, gradients, and reusable components (BrandCard, GradientAvatar, StatusPill, HeroSection) to match web app styling
 - **2025-01-19**: Restructured web app pages into `(dashboard)` route group — Shared layout with sidebar/mobile nav, auth check happens once in layout
 - **2025-01-18**: Used Supabase instead of custom backend — All-in-one solution with auto-scaling, native iOS SDK, built-in Apple Sign-In support
-- **2025-01-18**: Chose "attendant" terminology over "student" — More generic for coaches, therapists, consultants beyond just tutoring
+- **2025-01-18**: Chose "attendant" terminology over "student" — More generic for coaches, therapists, consultants beyond just tutoring (later renamed to "Client" in UI)
 - **2025-01-18**: Private storage bucket for audio files — Security; access via signed URLs only
 
 ## Mistakes & Lessons
@@ -55,7 +56,7 @@ iOS-first app for session-based professionals (tutors, coaches, therapists) to r
 - iOS Xcode project builds successfully on simulator
 - iOS Swift packages configured (supabase-swift v2, RevenueCat)
 - **iOS app branded design matching web app** (Theme.swift design system)
-- iOS views styled: WelcomeView, SignInView, DashboardView, MainTabView, SessionListView, AttendantListView, SettingsView
+- iOS views styled: WelcomeView, SignInView, DashboardView, MainTabView, SessionListView, ClientListView, SettingsView
 - **iOS recording waves animate on first press** - Fixed @MainActor isolation on RecordingService
 - **iOS light/dark mode toggle** - AppearanceManager with Light/Dark/System options in Settings
 - **iOS → Edge Function auth working** - Raw URLSession with manual token, JWT verification disabled on functions
@@ -79,7 +80,7 @@ iOS-first app for session-based professionals (tutors, coaches, therapists) to r
 ## Database Tables
 - `organizations` - Companies/practices/studios
 - `professionals` - Users who record sessions (linked to auth.users)
-- `attendants` - People who attend sessions
+- `attendants` - Clients/people who attend sessions (displayed as "Clients" in UI)
 - `sessions` - Recorded meetings with audio/transcripts
 - `recaps` - AI-generated summaries
 - `subscriptions` - Billing status
@@ -87,6 +88,15 @@ iOS-first app for session-based professionals (tutors, coaches, therapists) to r
 - `device_tokens` - Push notification tokens
 
 ## Changelog
+### 2026-01-20
+- **Renamed "Attendant" to "Client" throughout the app**
+  - iOS: Renamed files (Attendant.swift → Client.swift, AttendantsViewModel → ClientsViewModel, Views/Attendants → Views/Clients)
+  - iOS: Updated all types, variables, and UI labels (Attendant → Client)
+  - Web: Renamed page directory (/attendants → /clients)
+  - Web: Updated navigation, types, and page content
+  - Database table remains `attendants` - only renamed in UI/code layer
+  - Supabase queries use alias: `client:attendants!attendant_id(*)`
+
 ### 2026-01-19
 - **Fixed recording waves not animating on first press**
   - Root cause: Thread synchronization between `RecordingService` and `RecordingViewModel`
@@ -121,7 +131,7 @@ iOS-first app for session-based professionals (tutors, coaches, therapists) to r
 - Updated iOS app with branded design matching web app (`a01bedf`)
 - Created `Config/Theme.swift` with brand colors (pink #FF69B4, gold #FFD700), gradients, and reusable components
 - Added components: BrandCard, GradientAvatar, StatusPill, HeroSection, BrandText, GradientBlob
-- Styled all main views: WelcomeView, SignInView, DashboardView, MainTabView, SessionListView, AttendantListView, SettingsView
+- Styled all main views: WelcomeView, SignInView, DashboardView, MainTabView, SessionListView, ClientListView, SettingsView
 - Custom tab bar with elevated red record button and pink active state
 - Dark mode default (#030712 background) with gradient cards
 - Fixed iOS Swift/Supabase SDK v2 compatibility issues (`a0b588a`)
