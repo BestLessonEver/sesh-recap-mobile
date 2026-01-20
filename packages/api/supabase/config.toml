@@ -45,13 +45,13 @@ secret = "env(APPLE_SECRET)"
 enabled = false
 
 [functions.transcribe]
-verify_jwt = true
+verify_jwt = false
 
 [functions.generate-recap]
-verify_jwt = true
+verify_jwt = false
 
 [functions.send-recap]
-verify_jwt = true
+verify_jwt = false
 
 [functions.stripe-webhook]
 verify_jwt = false
