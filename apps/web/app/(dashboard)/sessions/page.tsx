@@ -44,7 +44,7 @@ export default async function SessionsPage() {
                     <h3 className="font-medium">
                       {session.client?.name ||
                         session.title ||
-                        `Session on ${new Date(session.created_at).toLocaleDateString()}`}
+                        new Date(session.created_at).toLocaleDateString()}
                     </h3>
                     <p className="text-sm text-muted-foreground mt-0.5">
                       {session.client?.name || 'No client'} &bull;{' '}
