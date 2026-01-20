@@ -115,7 +115,8 @@ export default async function DashboardPage() {
                     </div>
                     <div>
                       <p className="font-medium">
-                        {session.title ||
+                        {session.client?.name ||
+                          session.title ||
                           `Session on ${new Date(session.created_at).toLocaleDateString()}`}
                       </p>
                       <p className="text-sm text-muted-foreground">

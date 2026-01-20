@@ -42,7 +42,8 @@ export default async function SessionsPage() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <h3 className="font-medium">
-                      {session.title ||
+                      {session.client?.name ||
+                        session.title ||
                         `Session on ${new Date(session.created_at).toLocaleDateString()}`}
                     </h3>
                     <p className="text-sm text-muted-foreground mt-0.5">

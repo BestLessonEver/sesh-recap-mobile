@@ -58,7 +58,7 @@ struct Session: Codable, Identifiable, Equatable, Hashable {
     }
 
     var displayTitle: String {
-        title ?? "Session on \(createdAt.formatted(date: .abbreviated, time: .shortened))"
+        client?.name ?? title ?? "Session on \(createdAt.formatted(date: .abbreviated, time: .shortened))"
     }
 
     var hasRecap: Bool {
