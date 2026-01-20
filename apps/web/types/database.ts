@@ -128,6 +128,7 @@ export interface Database {
           audio_chunks: string[] | null
           duration_seconds: number
           transcript_text: string | null
+          notes: string | null
           session_status: string
           created_at: string
           updated_at: string
@@ -142,6 +143,7 @@ export interface Database {
           audio_chunks?: string[] | null
           duration_seconds?: number
           transcript_text?: string | null
+          notes?: string | null
           session_status?: string
           created_at?: string
           updated_at?: string
@@ -156,6 +158,7 @@ export interface Database {
           audio_chunks?: string[] | null
           duration_seconds?: number
           transcript_text?: string | null
+          notes?: string | null
           session_status?: string
           created_at?: string
           updated_at?: string

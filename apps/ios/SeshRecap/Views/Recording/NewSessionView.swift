@@ -23,7 +23,11 @@ struct NewSessionView: View {
 
                 VStack(spacing: 32) {
                     if viewModel.isRecording || hasStartedRecording {
-                        RecordingActiveView(viewModel: viewModel, onSessionCompleted: onSessionCompleted)
+                        RecordingActiveView(
+                            viewModel: viewModel,
+                            clients: clientsViewModel.activeClients,
+                            onSessionCompleted: onSessionCompleted
+                        )
                     } else {
                         // Show loading while auto-starting
                         VStack(spacing: 16) {
@@ -41,6 +45,8 @@ struct NewSessionView: View {
             .toolbarColorScheme(.dark, for: .navigationBar)
             .interactiveDismissDisabled(viewModel.isRecording)
             .task {
+                // Load clients if not already loaded
+                await clientsViewModel.loadClients()
                 // Auto-start recording immediately when view appears
                 if !hasStartedRecording {
                     hasStartedRecording = true
@@ -61,105 +67,160 @@ struct NewSessionView: View {
 
 struct RecordingActiveView: View {
     @ObservedObject var viewModel: RecordingViewModel
+    let clients: [Client]
     @Environment(\.dismiss) private var dismiss: DismissAction
     let onSessionCompleted: ((UUID) -> Void)?
 
+    @State private var showClientPicker = false
+    @FocusState private var isNotesFocused: Bool
+
     var body: some View {
-        VStack(spacing: 32) {
-            Spacer()
-
-            // Audio Level Visualizer
-            AudioLevelMeter(level: viewModel.audioLevel)
-                .frame(height: 100)
-
-            // Duration
-            Text(viewModel.formattedDuration)
-                .font(.system(size: 60, weight: .light, design: .monospaced))
-                .foregroundStyle(Color.textPrimary)
-
-            // Status
-            HStack(spacing: 8) {
-                Circle()
-                    .fill(viewModel.isPaused ? Color.warning : Color.error)
-                    .frame(width: 12, height: 12)
-                    .accessibilityHidden(true)
-                Text(viewModel.isPaused ? "Paused" : "Recording")
-                    .foregroundStyle(Color.textSecondary)
-            }
-            .accessibilityElement(children: .combine)
-            .accessibilityLabel(viewModel.isPaused ? "Recording paused" : "Recording in progress")
-
-            Spacer()
-
-            // Controls
-            HStack(spacing: 40) {
-                // Cancel
+        ScrollView {
+            VStack(spacing: 24) {
+                // Client Picker
                 Button {
-                    Task {
-                        await viewModel.cancelRecording()
-                        dismiss()
-                    }
+                    showClientPicker = true
                 } label: {
-                    VStack {
-                        Image(systemName: "xmark.circle.fill")
-                            .font(.system(size: 44))
+                    HStack {
+                        Image(systemName: "person.fill")
+                            .foregroundStyle(Color.brandPink)
+                        Text(viewModel.selectedClient?.name ?? "Select Client")
+                            .foregroundStyle(viewModel.selectedClient == nil ? Color.textSecondary : Color.textPrimary)
+                        Spacer()
+                        Image(systemName: "chevron.down")
+                            .font(.caption)
                             .foregroundStyle(Color.textTertiary)
-                        Text("Cancel")
-                            .font(.caption)
-                            .foregroundStyle(Color.textSecondary)
                     }
-                    .frame(minWidth: 44, minHeight: 60)
+                    .padding()
+                    .background(Color.bgSecondary)
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
                 }
-                .accessibilityLabel("Cancel recording")
-                .accessibilityHint("Discards the current recording")
+                .accessibilityLabel("Select client")
+                .accessibilityValue(viewModel.selectedClient?.name ?? "No client selected")
 
-                // Pause/Resume
-                Button {
-                    if viewModel.isPaused {
-                        viewModel.resumeRecording()
-                    } else {
-                        viewModel.pauseRecording()
-                    }
-                } label: {
-                    VStack {
-                        Image(systemName: viewModel.isPaused ? "play.circle.fill" : "pause.circle.fill")
-                            .font(.system(size: 44))
-                            .foregroundStyle(Color.warning)
-                        Text(viewModel.isPaused ? "Resume" : "Pause")
-                            .font(.caption)
-                            .foregroundStyle(Color.textSecondary)
-                    }
-                    .frame(minWidth: 44, minHeight: 60)
+                // Audio Level Visualizer
+                AudioLevelMeter(level: viewModel.audioLevel)
+                    .frame(height: 80)
+
+                // Duration
+                Text(viewModel.formattedDuration)
+                    .font(.system(size: 56, weight: .light, design: .monospaced))
+                    .foregroundStyle(Color.textPrimary)
+
+                // Status
+                HStack(spacing: 8) {
+                    Circle()
+                        .fill(viewModel.isPaused ? Color.warning : Color.error)
+                        .frame(width: 12, height: 12)
+                        .accessibilityHidden(true)
+                    Text(viewModel.isPaused ? "Paused" : "Recording")
+                        .foregroundStyle(Color.textSecondary)
                 }
-                .accessibilityLabel(viewModel.isPaused ? "Resume recording" : "Pause recording")
+                .accessibilityElement(children: .combine)
+                .accessibilityLabel(viewModel.isPaused ? "Recording paused" : "Recording in progress")
 
-                // Stop
-                Button {
-                    Task {
-                        if let sessionId = await viewModel.stopRecording() {
-                            dismiss()
-                            onSessionCompleted?(sessionId)
-                        } else {
+                // Notes Field
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Session Notes")
+                        .font(.caption)
+                        .foregroundStyle(Color.textSecondary)
+
+                    TextEditor(text: $viewModel.sessionNotes)
+                        .focused($isNotesFocused)
+                        .frame(minHeight: 100, maxHeight: 150)
+                        .padding(12)
+                        .background(Color.bgSecondary)
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                        .overlay(
+                            Group {
+                                if viewModel.sessionNotes.isEmpty && !isNotesFocused {
+                                    Text("Add notes to include in the recap email...")
+                                        .foregroundStyle(Color.textTertiary)
+                                        .padding(.horizontal, 16)
+                                        .padding(.vertical, 20)
+                                        .allowsHitTesting(false)
+                                }
+                            },
+                            alignment: .topLeading
+                        )
+                }
+
+                Spacer(minLength: 20)
+
+                // Controls
+                HStack(spacing: 40) {
+                    // Cancel
+                    Button {
+                        Task {
+                            await viewModel.cancelRecording()
                             dismiss()
                         }
+                    } label: {
+                        VStack {
+                            Image(systemName: "xmark.circle.fill")
+                                .font(.system(size: 44))
+                                .foregroundStyle(Color.textTertiary)
+                            Text("Cancel")
+                                .font(.caption)
+                                .foregroundStyle(Color.textSecondary)
+                        }
+                        .frame(minWidth: 44, minHeight: 60)
                     }
-                } label: {
-                    VStack {
-                        Image(systemName: "stop.circle.fill")
-                            .font(.system(size: 44))
-                            .foregroundStyle(Color.error)
-                        Text("Stop")
-                            .font(.caption)
-                            .foregroundStyle(Color.textSecondary)
-                    }
-                    .frame(minWidth: 44, minHeight: 60)
-                }
-                .accessibilityLabel("Stop and save recording")
-            }
+                    .accessibilityLabel("Cancel recording")
+                    .accessibilityHint("Discards the current recording")
 
-            Spacer()
+                    // Pause/Resume
+                    Button {
+                        if viewModel.isPaused {
+                            viewModel.resumeRecording()
+                        } else {
+                            viewModel.pauseRecording()
+                        }
+                    } label: {
+                        VStack {
+                            Image(systemName: viewModel.isPaused ? "play.circle.fill" : "pause.circle.fill")
+                                .font(.system(size: 44))
+                                .foregroundStyle(Color.warning)
+                            Text(viewModel.isPaused ? "Resume" : "Pause")
+                                .font(.caption)
+                                .foregroundStyle(Color.textSecondary)
+                        }
+                        .frame(minWidth: 44, minHeight: 60)
+                    }
+                    .accessibilityLabel(viewModel.isPaused ? "Resume recording" : "Pause recording")
+
+                    // Stop
+                    Button {
+                        Task {
+                            if let sessionId = await viewModel.stopRecording() {
+                                dismiss()
+                                onSessionCompleted?(sessionId)
+                            } else {
+                                dismiss()
+                            }
+                        }
+                    } label: {
+                        VStack {
+                            Image(systemName: "stop.circle.fill")
+                                .font(.system(size: 44))
+                                .foregroundStyle(Color.error)
+                            Text("Stop")
+                                .font(.caption)
+                                .foregroundStyle(Color.textSecondary)
+                        }
+                        .frame(minWidth: 44, minHeight: 60)
+                    }
+                    .accessibilityLabel("Stop and save recording")
+                }
+
+                Spacer(minLength: 20)
+            }
+            .padding()
         }
-        .padding()
+        .scrollDismissesKeyboard(.interactively)
+        .sheet(isPresented: $showClientPicker) {
+            ClientPickerView(clients: clients, selected: $viewModel.selectedClient)
+        }
     }
 }
 
@@ -215,10 +276,11 @@ struct ClientPickerView: View {
                 } label: {
                     HStack {
                         Text("No Client")
+                            .foregroundStyle(Color.textPrimary)
                         Spacer()
                         if selected == nil {
                             Image(systemName: "checkmark")
-                                .foregroundStyle(.blue)
+                                .foregroundStyle(Color.brandPink)
                         }
                     }
                 }
@@ -229,16 +291,19 @@ struct ClientPickerView: View {
                         dismiss()
                     } label: {
                         HStack {
+                            GradientAvatar(name: client.name, size: 32)
                             Text(client.name)
+                                .foregroundStyle(Color.textPrimary)
                             Spacer()
                             if selected?.id == client.id {
                                 Image(systemName: "checkmark")
-                                    .foregroundStyle(.blue)
+                                    .foregroundStyle(Color.brandPink)
                             }
                         }
                     }
                 }
             }
+            .listStyle(.plain)
             .navigationTitle("Select Client")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

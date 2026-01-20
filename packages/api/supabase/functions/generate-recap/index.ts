@@ -63,8 +63,28 @@ serve(async (req) => {
     const customPrompt = session.professional?.organization?.recap_prompt
     const systemPrompt = customPrompt || DEFAULT_PROMPT
 
-    const attendantName = session.attendant?.name || 'the attendant'
+    const clientName = session.attendant?.name || 'the client'
     const professionalName = session.professional?.name || 'the professional'
+
+    // Build the user message with optional notes
+    let userMessage = `Session with ${clientName}, led by ${professionalName}.
+
+Session title: ${session.title || 'Untitled Session'}
+
+Transcript:
+${session.transcript_text}`
+
+    // Add notes if present
+    if (session.notes) {
+      userMessage += `
+
+Professional's Notes:
+${session.notes}`
+    }
+
+    userMessage += `
+
+Please generate a recap email for this session.`
 
     const openaiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -78,14 +98,7 @@ serve(async (req) => {
           { role: 'system', content: systemPrompt },
           {
             role: 'user',
-            content: `Session with ${attendantName}, led by ${professionalName}.
-
-Session title: ${session.title || 'Untitled Session'}
-
-Transcript:
-${session.transcript_text}
-
-Please generate a recap email for this session.`,
+            content: userMessage,
           },
         ],
         temperature: 0.7,

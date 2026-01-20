@@ -13,6 +13,7 @@ struct Session: Codable, Identifiable, Equatable, Hashable {
     var audioChunks: [String]?
     var durationSeconds: Int
     var transcriptText: String?
+    var notes: String?
     var sessionStatus: SessionStatus
     let createdAt: Date
     var updatedAt: Date
@@ -39,6 +40,7 @@ struct Session: Codable, Identifiable, Equatable, Hashable {
         case audioChunks = "audio_chunks"
         case durationSeconds = "duration_seconds"
         case transcriptText = "transcript_text"
+        case notes
         case sessionStatus = "session_status"
         case createdAt = "created_at"
         case updatedAt = "updated_at"
@@ -95,6 +97,7 @@ struct UpdateSessionRequest: Codable {
     var audioUrl: String?
     var audioChunks: [String]?
     var durationSeconds: Int?
+    var notes: String?
     var sessionStatus: Session.SessionStatus?
 
     enum CodingKeys: String, CodingKey {
@@ -103,6 +106,7 @@ struct UpdateSessionRequest: Codable {
         case audioUrl = "audio_url"
         case audioChunks = "audio_chunks"
         case durationSeconds = "duration_seconds"
+        case notes
         case sessionStatus = "session_status"
     }
 }

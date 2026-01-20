@@ -12,6 +12,7 @@ class RecordingViewModel: ObservableObject {
 
     @Published var selectedClient: Client?
     @Published var sessionTitle: String = ""
+    @Published var sessionNotes: String = ""
 
     private var currentSessionId: UUID?
     private let recordingService = RecordingService.shared
@@ -105,10 +106,12 @@ class RecordingViewModel: ObservableObject {
         do {
             let chunks = try await recordingService.stopRecording()
 
-            // Update session with audio info and set status to uploading
+            // Update session with audio info, client, notes, and set status to uploading
             try await sessionsViewModel.updateSession(sessionId, request: UpdateSessionRequest(
+                clientId: selectedClient?.id,
                 audioChunks: chunks,
                 durationSeconds: Int(recordedDuration),
+                notes: sessionNotes.isEmpty ? nil : sessionNotes,
                 sessionStatus: .uploading
             ))
 
@@ -129,6 +132,7 @@ class RecordingViewModel: ObservableObject {
             currentSessionId = nil
             selectedClient = nil
             sessionTitle = ""
+            sessionNotes = ""
 
             return sessionId
         } catch {
